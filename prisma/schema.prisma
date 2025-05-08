@@ -1,0 +1,97 @@
+// Docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model categorias {
+  id     Int    @id @default(autoincrement())
+  nombre String
+
+  productos productos[]
+}
+
+model detalledeventas {
+  id              Int       @id @default(autoincrement())
+  ventacodigo     Int
+  productocodigo  Int
+  cantidad        Int
+  preciounitario  Int
+
+  venta    ventas    @relation(fields: [ventacodigo], references: [id])
+  producto productos @relation(fields: [productocodigo], references: [id])
+}
+
+enum TipoGasto {
+  Servicios
+  Sueldos
+  Envíos
+  Pedidos
+  Alquiler
+  Alquiler_impresoras
+  Cuotas
+  Seguros
+  Monotributo
+  Otros
+  Expensas
+}
+
+model gastos {
+  id             Int       @id @default(autoincrement())
+  nombre         String
+  tipo           TipoGasto
+  fecha          String
+  observaciones  String?
+}
+
+model mediosdepago {
+  id             Int     @id @default(autoincrement())
+  nombre         String
+  observaciones  String?
+
+  ventas         ventas[]
+}
+
+model productos {
+  id                Int       @id @default(autoincrement())
+  nombre            String
+  categoria         Int
+  preciocompra      Int
+  precioventa       Int
+  stock             Int
+  stockminimo       Int
+  tiendaonline      Int
+  fechavencimiento  String?
+  proveedor         Int
+  observaciones     String?
+  fechamodificacion String
+
+  categoria_fk categorias @relation(fields: [categoria], references: [id])
+  proveedor_fk proveedor  @relation(fields: [proveedor], references: [id])
+  ventas       detalledeventas[]
+}
+
+model proveedor {
+  id        Int     @id @default(autoincrement())
+  direccion String
+  nombre    String
+  telefono  String
+  pagina    String
+
+  productos productos[]
+}
+
+model ventas {
+  id            Int              @id @default(autoincrement())
+  mediosdepago  Int
+  total         Int
+  fecha         String
+
+  mediodepago mediosdepago      @relation(fields: [mediosdepago], references: [id])
+  detalles    detalledeventas[]
+}
