@@ -11,6 +11,7 @@ export default async function handler(
   try {
     switch (req.method) {
       case "DELETE":
+        console.log(id);
         const deletedProduct = await prisma.productos.delete({ where: { id } });
         res
           .status(200)

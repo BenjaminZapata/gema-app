@@ -50,7 +50,11 @@ export const useProductsPage = () => {
         await dispatch(getProducts());
         await dispatch(getSuppliers());
       } catch (err) {
-        toast.error(err.issues[0].message);
+        if (err instanceof Error) {
+          toast.error(err.message);
+        } else {
+          toast.error("Ocurrió un error desconocido");
+        }
       }
     };
     fetchData();
@@ -66,7 +70,11 @@ export const useProductsPage = () => {
       setLoading(false);
       toast.success("Se refresco la información");
     } catch (err) {
-      toast.error(err.issues[0].message);
+      if (err instanceof Error) {
+        toast.error(err.message);
+      } else {
+        toast.error("Ocurrió un error desconocido");
+      }
     }
   };
 

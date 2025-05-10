@@ -1,7 +1,6 @@
-// Importes de React
-import { useState } from "react";
-// Importes de terceros
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { ZodError } from "zod";
 import {
   Button,
   Dialog,
@@ -9,32 +8,147 @@ import {
   DialogContent,
   DialogTitle,
   Tooltip,
+  Theme,
+  useTheme,
 } from "@mui/material";
-// Importes propios
-import { ProductRowButton } from "../ProductRowButton";
-import { Edit } from "@mui/icons-material";
 import { ProductTypes } from "@/types/CommonTypes";
-import { getFormData } from "@/utils/Functions";
-import { addProductsInputs, productSchema } from "@/utils/Utils";
+import {
+  addProductsInputs,
+  UpdateProductFormData,
+  updateProductSchema,
+} from "@/utils/Utils";
 import { useAppDispatch } from "@/hooks/reduxHooks";
 import { getProducts, modifyProduct } from "@/redux/slices/productsSlice";
+import { ProductRowButton } from "../ProductRowButton";
+import { Edit } from "@mui/icons-material";
 import { CustomInput } from "@/components/commons/CustomInput";
 
-export const ModifySupplierDialog = ({
-  open = false,
+const getInitialFormValues = (product: ProductTypes): Record<string, any> => {
+  const values: Record<string, any> = {};
+  addProductsInputs.forEach((input) => {
+    const key = input.nombre as keyof ProductTypes;
+    const productValue = product[key];
+
+    if (input.nombre === "id") {
+      values[key] = productValue ?? "";
+    } else if (input.nombre === "tiendaonline") {
+      values[key] = String(Boolean(productValue));
+    } else if (input.type === "date") {
+      values[key] = productValue ? productValue : null;
+    } else if (productValue === null || productValue === undefined) {
+      values[key] = input.type === "number" ? "" : "";
+    } else {
+      values[key] = productValue;
+    }
+  });
+  values.id = product.id;
+  return values;
+};
+
+interface ModifyProductDialogProps {
+  open: boolean;
+  setOpen: (data: boolean) => void;
+  product: ProductTypes;
+}
+
+export const ModifyProductDialog = ({
+  open,
   product,
   setOpen,
-}: {
-  open: boolean;
-  product: ProductTypes;
-  setOpen: (data: boolean) => void;
-}) => {
-  const [error, setError] = useState<boolean>(true);
+}: ModifyProductDialogProps) => {
   const dispatch = useAppDispatch();
+  const theme = useTheme();
+
+  const [formData, setFormData] = useState<Record<string, any>>(() =>
+    getInitialFormValues(product)
+  );
+  const [isFormInvalid, setIsFormInvalid] = useState<boolean>(true);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [fieldErrors, setFieldErrors] = useState<
+    Record<string, string | undefined>
+  >({});
+
+  useEffect(() => {
+    if (open && product) {
+      setFormData(getInitialFormValues(product));
+    }
+  }, [product, open]);
+
+  useEffect(() => {
+    const dataToValidate = {
+      ...formData,
+      id: product.id,
+    };
+
+    try {
+      updateProductSchema.parse(dataToValidate);
+      setIsFormInvalid(false);
+      setFieldErrors({});
+    } catch (err) {
+      console.log(err);
+      setIsFormInvalid(true);
+      if (err instanceof ZodError) {
+        const newErrors: Record<string, string | undefined> = {};
+        err.errors.forEach((e) => {
+          if (e.path.length > 0) {
+            newErrors[e.path[0] as string] = e.message;
+          }
+        });
+        setFieldErrors(newErrors);
+      } else {
+        setFieldErrors({});
+      }
+    }
+  }, [formData, product]);
+
+  const handleInputChange = (name: string, value: any) => {
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleActualSubmit = async () => {
+    setIsSubmitting(true);
+
+    const dataToParse = {
+      ...formData,
+      id: product.id,
+    };
+
+    try {
+      const validatedData = updateProductSchema.parse(
+        dataToParse
+      ) as UpdateProductFormData;
+
+      await dispatch(modifyProduct(validatedData));
+      await dispatch(getProducts());
+      toast.success(`Producto modificado correctamente`);
+      handleClose();
+    } catch (err) {
+      if (err instanceof ZodError) {
+        const newErrors: Record<string, string | undefined> = {};
+        err.errors.forEach((e) => {
+          if (e.path.length > 0) {
+            newErrors[e.path[0] as string] = e.message;
+          }
+        });
+        setFieldErrors(newErrors);
+        toast.error("Por favor, corrige los errores en el formulario.");
+      } else if (err instanceof Error) {
+        console.error("Error al modificar producto:", err);
+        toast.error(err.message || `Error al modificar el producto.`);
+      } else {
+        toast.error("Ocurrió un error inesperado.");
+        console.error("Error desconocido:", err);
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const handleClose = () => {
     setOpen(false);
   };
+
+  if (!product) return null;
 
   return (
     <>
@@ -42,9 +156,7 @@ export const ModifySupplierDialog = ({
         <ProductRowButton
           variant="contained"
           color="info"
-          onClick={() => {
-            setOpen(true);
-          }}
+          onClick={() => setOpen(true)}
         >
           <Edit />
         </ProductRowButton>
@@ -56,73 +168,56 @@ export const ModifySupplierDialog = ({
         onClose={handleClose}
         PaperProps={{
           component: "form",
-          onChange: async (event: React.FormEvent<HTMLFormElement>) => {
-            event.preventDefault();
-            const data: ProductTypes = await getFormData(event);
-            try {
-              const dataToValidate = {
-                ...data,
-                id: product.id,
-              };
-              productSchema.parse(dataToValidate);
-              setError(false);
-            } catch (err) {
-              console.log(err);
-              setError(true);
-            }
+          onSubmit: (e) => {
+            e.preventDefault();
+            handleActualSubmit();
           },
-          onSubmit: async (event: React.FormEvent<HTMLFormElement>) => {
-            event.preventDefault();
-            const data: ProductTypes = await getFormData(event);
-            try {
-              const dataToValidate = {
-                ...data,
-                id: product.id,
-              };
-              productSchema.parse(dataToValidate);
-              await dispatch(modifyProduct(dataToValidate));
-              await dispatch(getProducts());
-            } catch (err) {
-              toast.error(err.issues[0].message);
-            }
-            handleClose();
+        }}
+        sx={{
+          "& .MuiDialog-paper": {
+            width: "50vw",
+            minWidth: (theme: Theme) => theme.spacing(60),
           },
-          sx: (theme) => ({ width: "40vw", minWidth: theme.spacing(50) }),
         }}
       >
-        <DialogTitle>Agregar un producto</DialogTitle>
+        <DialogTitle>Modificar Producto</DialogTitle>
         <DialogContent
-          sx={(theme) => ({
+          sx={{
             display: "flex",
             flexWrap: "wrap",
             justifyContent: "space-between",
-            gap: theme.spacing(1),
-          })}
+            gap: (theme: Theme) => theme.spacing(2),
+            pt: (theme: Theme) => `${theme.spacing(1)} !important`,
+          }}
         >
-          {addProductsInputs.map((inputConfig) => {
-            const rawValueFromProduct = product[inputConfig.nombre];
-
-            return (
-              <CustomInput
-                key={inputConfig.nombre}
-                data={inputConfig}
-                isEditMode={inputConfig.nombre === "id"}
-                productFieldValue={rawValueFromProduct}
-                sx={(theme) => ({
-                  width: { xs: "100%", md: `calc(50% - ${theme.spacing(1)})` },
-                  mb: 2,
-                })}
-              />
-            );
-          })}
+          {addProductsInputs.map((inputConfig) => (
+            <CustomInput
+              key={inputConfig.nombre}
+              data={inputConfig}
+              currentFieldValue={formData[inputConfig.nombre]}
+              onValueChange={handleInputChange}
+              isEditMode={true}
+              fieldError={fieldErrors[inputConfig.nombre]}
+              sx={{
+                width: { xs: "100%", sm: `calc(50% - ${theme.spacing(1)})` },
+              }}
+            />
+          ))}
         </DialogContent>
-        <DialogActions sx={(theme) => ({ color: theme.palette.common.black })}>
+        <DialogActions
+          sx={{
+            color: (theme: Theme) => theme.palette.common.black,
+            px: 3,
+            pb: 2,
+          }}
+        >
           <Button onClick={handleClose} color="inherit">
-            Cancelar
+            {" "}
+            Cancelar{" "}
           </Button>
           <Button
             color="success"
-            disabled={error}
+            disabled={isFormInvalid || isSubmitting}
             type="submit"
             variant="contained"
           >

@@ -37,7 +37,7 @@ export const ProductList = ({
   return (
     <Box data-name="ProductsList">
       <Box minHeight={487}>
-        <TableContainer sx={{ margin: "auto", width: "80%" }}>
+        <TableContainer sx={{ margin: "auto", width: "90%" }}>
           <Table>
             <TableHead>
               <TableRow>

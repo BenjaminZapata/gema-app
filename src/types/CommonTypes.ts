@@ -13,11 +13,11 @@ export interface SupplierTypes {
 
 export interface ProductTypes {
   categoria: number;
-  fechamodificacion: number;
-  fechavencimiento: number;
+  fechamodificacion?: number;
+  fechavencimiento: Date | null;
   id: number;
   nombre: string;
-  observaciones: null | string;
+  observaciones: null | string | undefined;
   preciocompra: number;
   precioventa: number;
   proveedor: number;

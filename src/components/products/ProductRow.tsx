@@ -2,11 +2,10 @@
 import { useState } from "react";
 // Importes de teceros
 import { Box, TableCell, TableRow, Tooltip, Typography } from "@mui/material";
-import { PriorityHigh, Storefront } from "@mui/icons-material";
+import { PriorityHigh, Storefront, Warning } from "@mui/icons-material";
 // Importes propios
 import { DeleteSupplierDialog } from "./dialogs/DeleteProductDialog";
 import { ExpirationFunctionType } from "@/utils/CommonTypes";
-import { ModifySupplierDialog } from "./dialogs/ModifyProductDialog";
 import { ProductTypes } from "@/types/CommonTypes";
 import { useAppSelector } from "@/hooks/reduxHooks";
 import {
@@ -14,6 +13,8 @@ import {
   getExpirationDate,
   getLastModification,
 } from "@/utils/Functions";
+import { ModifyProductDialog } from "./dialogs/ModifyProductDialog";
+import { ProductInfo } from "./ProductInfo";
 
 interface ProductRowProps {
   product: ProductTypes;
@@ -22,7 +23,7 @@ interface ProductRowProps {
 export const ProductRow = ({ product }: ProductRowProps) => {
   const [deleteProductOpen, setDeleteProductOpen] = useState<boolean>(false);
   const [modifyProductOpen, setModifyProductOpen] = useState<boolean>(false);
-  const { categories } = useAppSelector((state) => state.productos);
+  const { categories, suppliers } = useAppSelector((state) => state.productos);
   const isExpired: ExpirationFunctionType = getExpirationDate(product);
 
   const {
@@ -42,7 +43,7 @@ export const ProductRow = ({ product }: ProductRowProps) => {
 
   return (
     <>
-      <TableRow data-name="ProductRow">
+      <TableRow hover data-name="ProductRow">
         <TableCell sx={{ borderLeft: "none" }}>{id}</TableCell>
         <TableCell>
           <Box alignItems={"center"} display={"flex"} gap={1}>
@@ -54,38 +55,53 @@ export const ProductRow = ({ product }: ProductRowProps) => {
               {nombre}
             </Box>
             <Box alignItems={"center"} display={"flex"} gap={0.5}>
-              {Number(tiendaonline) == 1 && (
+              {Number(tiendaonline) == 1 ? (
                 <Tooltip
                   disableInteractive
                   title={"Disponible en tienda online"}
                 >
-                  <Storefront fontSize="small" />
+                  <Storefront fontSize="small" color="success" />
                 </Tooltip>
-              )}
-              {fechavencimiento && isExpired.expiresSoon && (
+              ) : null}
+              {fechavencimiento && isExpired.expiresSoon ? (
                 <Tooltip disableInteractive title={isExpired.message}>
-                  <PriorityHigh color={isExpired.color} />
+                  <PriorityHigh fontSize="small" color={isExpired.color} />
                 </Tooltip>
-              )}
+              ) : null}
+              {stockminimo >= stock ? (
+                <Tooltip disableInteractive title={"Producto con stock bajo"}>
+                  <Warning color="warning" fontSize="small" />
+                </Tooltip>
+              ) : null}
             </Box>
           </Box>
         </TableCell>
         <TableCell>
           {categories.find((c) => c.id === categoria)?.nombre}
         </TableCell>
-        <TableCell>{precioventa}</TableCell>
-        <TableCell>{stock}</TableCell>
+        <TableCell sx={{ textAlign: "center" }}>$ {precioventa}</TableCell>
+        <TableCell sx={{ textAlign: "center" }}>{stock}</TableCell>
         <TableCell>
-          <Tooltip disableInteractive title={getDate(fechamodificacion)}>
-            <Typography>{getLastModification(fechamodificacion)}</Typography>
-          </Tooltip>
+          {fechamodificacion && (
+            <Tooltip disableInteractive title={getDate(fechamodificacion)}>
+              <Typography fontSize={"14px"}>
+                {getLastModification(fechamodificacion)}
+              </Typography>
+            </Tooltip>
+          )}
         </TableCell>
         <TableCell sx={(theme) => ({ width: theme.spacing(14) })}>
           <Box display={"flex"} justifyContent={"center"} gap={1}>
-            <ModifySupplierDialog
+            <ModifyProductDialog
               open={modifyProductOpen}
               product={product}
               setOpen={setModifyProductOpen}
+            />
+            <ProductInfo
+              observaciones={observaciones}
+              preciocompra={preciocompra}
+              proveedor={proveedor}
+              suppliers={suppliers}
             />
             <DeleteSupplierDialog
               open={deleteProductOpen}

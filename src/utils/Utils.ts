@@ -15,52 +15,69 @@ export const categorySchema = z
   .string()
   .min(3, "Nombre: ingrese mas de 3 caracteres");
 
-export const productSchema = z.object({
-  id: z.number().int().positive(),
-  nombre: z.string().min(3),
-  categoria: z.string().min(1),
-  preciocompra: z.coerce.number().min(0),
-  precioventa: z.coerce.number().min(0),
-  stock: z.coerce.number().min(0),
-  stockminimo: z.coerce.number().min(0),
+const baseProductSchemaFields = {
+  nombre: z.string().min(3, "El nombre debe tener al menos 3 caracteres"),
+  categoria: z.coerce
+    .number({ invalid_type_error: "Categoría es requerida" })
+    .int("Categoría inválida")
+    .positive("Categoría inválida"),
+  proveedor: z.coerce
+    .number({ invalid_type_error: "Proveedor es requerido" })
+    .int("Proveedor inválido")
+    .positive("Proveedor inválido"),
+  preciocompra: z.coerce
+    .number({ invalid_type_error: "Costo es requerido" })
+    .nonnegative("Costo no puede ser negativo"),
+  precioventa: z.coerce
+    .number({ invalid_type_error: "Precio de venta es requerido" })
+    .nonnegative("Precio de venta no puede ser negativo"),
+  stock: z.coerce
+    .number({ invalid_type_error: "Stock es requerido" })
+    .int("Stock debe ser entero")
+    .nonnegative("Stock no puede ser negativo"),
+  stockminimo: z.coerce
+    .number({ invalid_type_error: "Stock mínimo es requerido" })
+    .int("Stock mínimo debe ser entero")
+    .nonnegative("Stock mínimo no puede ser negativo"),
   tiendaonline: z
-    .enum(["true", "false"])
+    .enum(["true", "false"], {
+      errorMap: () => ({ message: "Seleccione una opción para tienda online" }),
+    })
     .transform((value) => value === "true"),
-  fechavencimiento: z.preprocess(
-    (arg) => {
-      // Si el argumento es un string vacío (común desde formularios), null, o undefined
-      if (arg === "" || arg === null || arg === undefined) {
-        return null; // Queremos que el valor final sea null
-      }
+  fechavencimiento: z.preprocess((arg) => {
+    if (arg === "" || arg === null || arg === undefined) return null;
+    if (
+      dayjs.isDayjs(arg) ||
+      arg instanceof Date ||
+      typeof arg === "number" ||
+      typeof arg === "string"
+    ) {
+      const date = dayjs(arg as string | number | Date | dayjs.Dayjs);
+      return date.isValid() ? date.toDate() : null;
+    }
+    return null;
+  }, z.date().nullable()),
+  observaciones: z
+    .string()
+    .min(3, "Observaciones debe tener al menos 3 caracteres")
+    .optional()
+    .or(z.literal("")),
+};
 
-      // Si el valor ya es un objeto Dayjs (si manejaras el estado con Dayjs directamente)
-      if (dayjs.isDayjs(arg)) {
-        return arg.isValid() ? arg.toDate() : null; // Convertir a Date o null
-      }
-
-      // Si es un objeto Date nativo
-      if (arg instanceof Date) {
-        // Re-validar con Dayjs por si es una fecha inválida como 'Invalid Date'
-        const d = dayjs(arg);
-        return d.isValid() ? d.toDate() : null;
-      }
-
-      // Si es un string (del DatePicker o un timestamp numérico)
-      // El DatePicker de MUI suele devolver un objeto Dayjs o null a su onChange,
-      // pero getFormData podría leer el valor del TextField subyacente como string.
-      if (typeof arg === "string" || typeof arg === "number") {
-        const date = dayjs(arg); // dayjs puede parsear strings y timestamps
-        return date.isValid() ? date.toDate() : null; // Convertir a Date o null
-      }
-
-      // Fallback para tipos inesperados
-      return null;
-    },
-    z.date().nullable() // Ahora espera un objeto Date válido o null
-  ),
-  proveedor: z.string().min(1),
-  observaciones: z.string().min(3).optional().or(z.literal("")),
+export const createProductSchema = z.object({
+  id: z.coerce
+    .number({ invalid_type_error: "Código es requerido" })
+    .int("El código debe ser un número entero") // o string si tu ID puede ser alfanumérico
+    .positive("El código debe ser positivo"),
+  ...baseProductSchemaFields,
 });
+export type CreateProductFormData = z.infer<typeof createProductSchema>;
+
+export const updateProductSchema = z.object({
+  id: z.coerce.number().int().positive(),
+  ...baseProductSchemaFields,
+});
+export type UpdateProductFormData = z.infer<typeof updateProductSchema>;
 
 export const supplierSchema = z.object({
   direccion: z.string().min(3),
