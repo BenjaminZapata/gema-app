@@ -26,7 +26,6 @@ export default function ProductsPage() {
         </Box>
       ) : (
         <>
-          {" "}
           <ChipProductList
             inputValue={filterInputValue}
             productList={productList}

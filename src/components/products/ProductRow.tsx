@@ -69,7 +69,7 @@ export const ProductRow = ({ product }: ProductRowProps) => {
                 </Tooltip>
               ) : null}
               {stockminimo >= stock ? (
-                <Tooltip disableInteractive title={"Producto con stock bajo"}>
+                <Tooltip disableInteractive title={"Stock bajo"}>
                   <Warning color="warning" fontSize="small" />
                 </Tooltip>
               ) : null}

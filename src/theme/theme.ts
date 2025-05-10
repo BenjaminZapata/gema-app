@@ -28,6 +28,15 @@ const theme = createTheme({
   typography: {
     fontFamily: "var(--font-roboto)",
   },
+  components: {
+    MuiTableCell: {
+      styleOverrides: {
+        root: {
+          padding: "8px 16px",
+        },
+      },
+    },
+  },
 });
 
 export default theme;

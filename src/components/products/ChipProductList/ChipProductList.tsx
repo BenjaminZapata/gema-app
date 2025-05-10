@@ -1,12 +1,12 @@
 // Importes de terceros
-import { Box, Tooltip } from '@mui/material';
-import { FilterList, Replay } from '@mui/icons-material';
+import { Box, Tooltip } from "@mui/material";
+import { FilterList, Replay } from "@mui/icons-material";
 // Importes propios
-import { AddProductDialog } from './dialogs/AddProductDialog';
-import { ChipMenu } from './ChipMenu';
-import { ChipProductListButton } from './ChipProductListButton';
-import { NameFilter } from './NameFilter';
-import { ProductTypes } from '@/types/CommonTypes';
+import { AddProductDialog } from "./dialogs/AddProductDialog";
+import { ChipMenu } from "./ChipMenu";
+import { ChipProductListButton } from "./ChipProductListButton";
+import { NameFilter } from "./NameFilter";
+import { ProductTypes } from "@/types/CommonTypes";
 
 interface ChipProductListProps {
   inputValue: string;
@@ -25,19 +25,21 @@ export const ChipProductList = ({
 }: ChipProductListProps) => {
   return (
     <Box
-      alignItems={'center'}
-      display={'flex'}
-      data-name='ChipProductList'
+      alignItems={"center"}
+      display={"flex"}
+      data-name="ChipProductList"
       gap={10}
-      justifyContent={'center'}
-      mx={'auto'}
+      justifyContent={"center"}
+      mx={"auto"}
+      mt={2}
       sx={(theme) => ({
         background: theme.palette.primary.contrastText,
         borderRadius: theme.spacing(1),
-        maxWidth: 'max-content',
+        maxWidth: "max-content",
         padding: `${theme.spacing(0.5)} ${theme.spacing(2)}`,
         height: theme.spacing(8),
-      })}>
+      })}
+    >
       <NameFilter
         inputValue={inputValue}
         productList={productList}
@@ -45,14 +47,14 @@ export const ChipProductList = ({
         setProductsList={setProductList}
       />
 
-      <Box display={'flex'} gap={2}>
+      <Box display={"flex"} gap={2}>
         <Box>
           <AddProductDialog />
           <ChipMenu />
         </Box>
 
-        <Tooltip disableInteractive title='Cambiar filtros'>
-          <ChipProductListButton variant='contained' color='info'>
+        <Tooltip disableInteractive title="Cambiar filtros">
+          <ChipProductListButton variant="contained" color="info">
             <FilterList
               sx={(theme) => ({
                 color: theme.palette.primary.contrastText,
@@ -61,8 +63,12 @@ export const ChipProductList = ({
           </ChipProductListButton>
         </Tooltip>
 
-        <Tooltip disableInteractive title='Recargar información'>
-          <ChipProductListButton variant='contained' color='warning' onClick={reloadData}>
+        <Tooltip disableInteractive title="Recargar información">
+          <ChipProductListButton
+            variant="contained"
+            color="warning"
+            onClick={reloadData}
+          >
             <Replay
               sx={(theme) => ({
                 color: theme.palette.primary.contrastText,
