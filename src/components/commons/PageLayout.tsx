@@ -6,7 +6,13 @@ export const PageLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <Box display={"flex"}>
       <Navbar />
-      <Box ml={9} padding={2} height={"100vh"} width={"calc(100vw - 72px)"}>
+      <Box
+        ml={9}
+        padding={2}
+        height={"100vh"}
+        width={"calc(100vw - 72px)"}
+        sx={{ background: "whitesmoke" }}
+      >
         {children}
       </Box>
     </Box>

@@ -1,5 +1,5 @@
 // Importes de React
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 // Importes de terceros
 import { toast } from "sonner";
 // Importes propios
@@ -8,25 +8,30 @@ import {
   getProducts,
   getSuppliers,
 } from "../../redux/slices/productsSlice";
-import { ProductTypes } from "@/types/CommonTypes";
+import { ProductFiltersStateTypes, ProductTypes } from "@/types/CommonTypes";
 import { useAppDispatch, useAppSelector } from "../reduxHooks";
 import { status } from "@/utils/Utils";
 
-export const useProductsPage = () => {
-  const [filterInputValue, setFilterInputValue] = useState<string>("");
-  const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState<number>(1);
-  const [productList, setProductList] = useState<Array<ProductTypes>>([]);
+const initialFiltersState: ProductFiltersStateTypes = {
+  lowStock: false,
+  name: "",
+  price: { min: undefined, max: undefined },
+  selectedCategoryIds: [],
+  selectedSupplierIds: [],
+};
 
+export const useProductsPage = () => {
+  //! Dispatch actions - Llamadas a API
   const dispatch = useAppDispatch();
   const {
-    products: productsData,
+    products: productsDataFromStore,
     statusCategories,
     statusProducts,
     statusSuppliers,
   } = useAppSelector((state) => state.productos);
+  const [loading, setLoading] = useState(true);
 
-  // useEffect - Loading state para Skeleton en ProductsPage
+  // useEffect - Loading spinner ProductsPage
   useEffect(() => {
     if (
       statusCategories === status.pending ||
@@ -37,18 +42,13 @@ export const useProductsPage = () => {
     else setLoading(false);
   }, [statusCategories, statusProducts, statusSuppliers]);
 
-  // useEffect - Carga de productos en state cada vez que esta se actualiza (dispatch)
-  useEffect(() => {
-    setProductList(productsData);
-  }, [productsData]);
-
-  // useEffect - Loading state para Skeleton en ProductsPage
+  // useEffect - Carga de categorias, proveedores y productos
   useEffect(() => {
     const fetchData = async () => {
       try {
         await dispatch(getCategories());
-        await dispatch(getProducts());
         await dispatch(getSuppliers());
+        await dispatch(getProducts());
       } catch (err) {
         if (err instanceof Error) {
           toast.error(err.message);
@@ -60,8 +60,13 @@ export const useProductsPage = () => {
     fetchData();
   }, [dispatch]);
 
+  // useEffect - Carga de productos en state cada vez que esta se actualiza (dispatch)
+  useEffect(() => {
+    setProductList(productsDataFromStore);
+  }, [productsDataFromStore]);
+
   // Función - Recarga de información (proveedores, productos y categorias)
-  const reloadData = async () => {
+  const reloadData = useCallback(async () => {
     setLoading(true);
     try {
       await dispatch(getProducts());
@@ -76,21 +81,101 @@ export const useProductsPage = () => {
         toast.error("Ocurrió un error desconocido");
       }
     }
-  };
+  }, [dispatch]);
 
-  // Función - Actualiza el numero de pagina en el componente de paginación
-  const handlePageChange = (event: unknown, value: number) => {
+  //! Lista de productos y filtros
+  const [productList, setProductList] = useState<Array<ProductTypes>>([]);
+  const [page, setPage] = useState<number>(1);
+  const [activeFilters, setActiveFilters] =
+    useState<ProductFiltersStateTypes>(initialFiltersState);
+
+  const [nameInput, setNameInput] = useState<string>("");
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setActiveFilters((prev) => ({ ...prev, name: nameInput }));
+    }, 300);
+    return () => clearTimeout(handler);
+  }, [nameInput]);
+
+  //? Función - Actualiza el numero de pagina en el componente de paginación
+  const handlePageChange = useCallback((event: unknown, value: number) => {
     setPage(value);
-  };
+  }, []);
+
+  //? Función - Filtro por categorias
+  const handleCategoryFilterChange = useCallback((categoryIds: string[]) => {
+    setActiveFilters((prev) => ({ ...prev, selectedCategoryIds: categoryIds }));
+  }, []);
+
+  //? Función - Filtro por proveedores
+  const handleSupplierFilterChange = useCallback((supplierIds: string[]) => {
+    setActiveFilters((prev) => ({ ...prev, selectedSupplierIds: supplierIds }));
+  }, []);
+
+  //? Función - Filtro por stock minimo
+  const handleMinStockFilterChange = useCallback((stockFilter: boolean) => {
+    setActiveFilters((prev) => ({ ...prev, lowStock: stockFilter }));
+  }, []);
+
+  //? Función - Reset de filtros
+  const applyFilters = useCallback(
+    (filtersFromDialog: ProductFiltersStateTypes) =>
+      setActiveFilters(filtersFromDialog),
+    []
+  );
+
+  //? Función - Reset de filtros
+  const resetAllFilters = useCallback(() => {
+    setNameInput("");
+    setActiveFilters(initialFiltersState);
+  }, []);
+
+  //? useEffect - Filtro de productos
+  useEffect(() => {
+    if (!productsDataFromStore) {
+      setProductList([]);
+      return;
+    }
+
+    let filtered = [...productsDataFromStore];
+    //* Por nombre
+    if (activeFilters.name?.trim()) {
+      const lowercasedInput = activeFilters.name.toLowerCase();
+      filtered = filtered.filter(
+        (p) =>
+          p.nombre.toLowerCase().includes(lowercasedInput) ||
+          String(p.id).includes(lowercasedInput)
+      );
+    }
+    //* Por categoria
+    if (activeFilters.selectedCategoryIds.length > 0) {
+      filtered = filtered.filter(
+        (p) =>
+          p.categoria &&
+          activeFilters.selectedCategoryIds.includes(p.categoria.toString())
+      );
+    }
+    //* Por stock
+    if (activeFilters.lowStock == true) {
+      filtered = filtered.filter((p) => p.stock <= p.stockminimo);
+    }
+
+    setProductList(filtered);
+  }, [activeFilters, productsDataFromStore]);
 
   return {
-    filterInputValue,
+    activeFilters,
+    applyFilters,
+    handleCategoryFilterChange,
+    handleMinStockFilterChange,
     handlePageChange,
+    handleSupplierFilterChange,
     loading,
+    nameInput,
     page,
     productList,
     reloadData,
-    setFilterInputValue,
-    setProductList,
+    resetAllFilters,
+    setNameInput,
   };
 };

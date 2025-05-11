@@ -8,34 +8,40 @@ import { ChipProductList } from "@/components/products/ChipProductList/ChipProdu
 
 export default function ProductsPage() {
   const {
-    filterInputValue,
+    activeFilters,
+    applyFilters,
+    handleCategoryFilterChange,
+    handleMinStockFilterChange,
     handlePageChange,
+    handleSupplierFilterChange,
     loading,
+    nameInput,
     page,
     productList,
     reloadData,
-    setFilterInputValue,
-    setProductList,
+    resetAllFilters,
+    setNameInput,
   } = useProductsPage();
 
   return (
     <>
       {loading ? (
         <Box margin={"auto"} width={"fit-content"}>
-          <CircularProgress sx={{ margin: "40vh auto" }} />
+          <CircularProgress disableShrink sx={{ margin: "40vh auto" }} />
         </Box>
       ) : (
         <>
           <ChipProductList
-            inputValue={filterInputValue}
-            productList={productList}
+            activeFilters={activeFilters}
+            applyFilters={applyFilters}
+            nameInput={nameInput}
             reloadData={reloadData}
-            setInputValue={setFilterInputValue}
-            setProductList={setProductList}
+            resetAllFilters={resetAllFilters}
+            setNameInput={setNameInput}
           />
           <ProductList
             products={productList}
-            filterByNameValue={filterInputValue}
+            nameInput={nameInput}
             page={page}
             handlePageChange={handlePageChange}
           />

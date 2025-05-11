@@ -1,7 +1,7 @@
 // Importes propios
 
 import { ProductTypes, SupplierTypes } from "@/types/CommonTypes";
-import { ExpirationFunctionType } from "./CommonTypes";
+import { ExpirationFunctionType } from "./Commons";
 
 export const getDate = (date: number) => {
   const formatedDate = new Date(date).toLocaleString("es-ES", {

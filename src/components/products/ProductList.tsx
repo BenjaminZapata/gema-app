@@ -14,12 +14,12 @@ import {
 import { ProductRow } from "./ProductRow";
 
 export const ProductList = ({
-  filterByNameValue,
+  nameInput,
   handlePageChange,
   page,
   products,
 }: {
-  filterByNameValue: string;
+  nameInput: string;
   handlePageChange: (event: unknown, data: number) => void;
   page: number;
   products: Array<ProductTypes>;
@@ -56,9 +56,9 @@ export const ProductList = ({
               ) : (
                 <TableRow>
                   <TableCell colSpan={7} sx={{ borderLeft: "none" }}>
-                    <Typography m={3} fontWeight={300} textAlign={'center'}>
-                      {filterByNameValue.length
-                        ? ` No existen productos que contengan "${filterByNameValue}" en su nombre`
+                    <Typography m={3} fontWeight={300} textAlign={"center"}>
+                      {nameInput.length
+                        ? ` No existen productos que contengan "${nameInput}" en su nombre`
                         : "¡Parece que no has agregado ningun producto todavia!"}
                     </Typography>
                   </TableCell>

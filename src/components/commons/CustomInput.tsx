@@ -10,18 +10,27 @@ import {
   TextField,
   FormHelperText,
   Button,
+  Chip,
+  Switch,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs, { Dayjs } from "dayjs";
 import { useAppSelector } from "@/hooks/reduxHooks"; // Ajusta la ruta
-import { InputProps } from "@/utils/CommonTypes";
+import { InputProps } from "@/utils/Commons";
 
 interface CustomInputProps
   extends Omit<BoxProps, "defaultValue" | "onChange" | "value" | "name"> {
   data: InputProps;
-  currentFieldValue: string | number | boolean | null | undefined;
+  currentFieldValue:
+    | string
+    | string[]
+    | number
+    | boolean
+    | null
+    | undefined
+    | Record<string, number>;
   onValueChange: (name: string, value: any) => void;
-  isEditMode: boolean; // True si el formulario es para editar, false para agregar
+  isEditMode?: boolean;
   fieldError?: string;
 }
 
@@ -29,7 +38,7 @@ export const CustomInput = ({
   data,
   currentFieldValue,
   onValueChange,
-  isEditMode,
+  isEditMode = false,
   fieldError,
   sx,
   ...boxProps
@@ -41,6 +50,12 @@ export const CustomInput = ({
   //    Los inputs de MUI a menudo esperan strings para `value` o un tipo específico (Dayjs).
 
   const muiInputValue = useMemo(() => {
+    if (
+      data.type == "multiselect_categories" ||
+      data.type === "multiselect_suppliers"
+    ) {
+      return Array.isArray(currentFieldValue) ? currentFieldValue : [];
+    }
     if (data.nombre === "tiendaonline") {
       if (typeof currentFieldValue === "boolean") {
         return String(currentFieldValue);
@@ -52,6 +67,9 @@ export const CustomInput = ({
     }
     if (data.type === "date") {
       return null;
+    }
+    if (data.type == "checkbox" || data.type == "switch") {
+      return Boolean(currentFieldValue);
     }
     if (currentFieldValue === null || currentFieldValue === undefined) {
       return "";
@@ -90,25 +108,39 @@ export const CustomInput = ({
     required: data.required,
     fullWidth: true,
     error: !!fieldError,
-    disabled: data.nombre === "id" && isEditMode,
+    disabled: (data.nombre === "id" && isEditMode) || false,
   };
 
   // 3. RENDERIZADO DEL INPUT
   let inputElement: JSX.Element;
 
   switch (data.type) {
+    case "multiselect_categories":
+    case "multiselect_suppliers":
     case "select":
       let selectOptions: Array<{ value: string; label: string }> = [];
-      if (data.nombre === "categoria" && categories) {
-        selectOptions = categories.map((cat) => ({
-          value: String(cat.id),
-          label: cat.nombre,
-        }));
-      } else if (data.nombre === "proveedor" && suppliers) {
-        selectOptions = suppliers.map((sup) => ({
-          value: String(sup.id),
-          label: sup.nombre,
-        }));
+      let isMultiple = false;
+
+      if (
+        data.type == "multiselect_categories" ||
+        data.nombre === "categoria"
+      ) {
+        selectOptions =
+          categories?.map((cat) => ({
+            value: String(cat.id),
+            label: cat.nombre,
+          })) || [];
+        if (data.type == "multiselect_categories") isMultiple = true;
+      } else if (
+        data.type == "multiselect_suppliers" ||
+        data.nombre === "proveedor"
+      ) {
+        selectOptions =
+          suppliers?.map((sup) => ({
+            value: String(sup.id),
+            label: sup.nombre,
+          })) || [];
+        if (data.type == "multiselect_suppliers") isMultiple = true;
       } else if (data.nombre === "tiendaonline") {
         selectOptions = [
           { value: "false", label: "No" },
@@ -122,20 +154,45 @@ export const CustomInput = ({
             id={`${data.nombre}-label`}
             shrink={!!muiInputValue || data.type === "select"}
           >
-            {" "}
-            {/* Shrink para Select */}
             {data.label}
           </InputLabel>
           <Select
             {...commonMuiProps}
             labelId={`${data.nombre}-label`}
+            multiple={isMultiple}
+            onChange={(e) =>
+              onValueChange(data.nombre, e.target.value as string | string[])
+            }
             value={muiInputValue}
-            onChange={(e) => onValueChange(data.nombre, e.target.value)}
+            renderValue={
+              isMultiple
+                ? (selected) => (
+                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                      {(selected as string[]).map((value) => {
+                        const option = selectOptions.find(
+                          (opt) => opt.value === value
+                        );
+                        return (
+                          <Chip
+                            key={value}
+                            label={option?.label || value}
+                            size="small"
+                          />
+                        );
+                      })}
+                    </Box>
+                  )
+                : undefined
+            }
           >
             {selectOptions.map((opt) => (
               <MenuItem key={opt.value} value={opt.value}>
-                {" "}
-                {opt.label}{" "}
+                {isMultiple && (
+                  <Checkbox
+                    checked={(muiInputValue as string[]).includes(opt.value)}
+                  />
+                )}
+                {opt.label}
               </MenuItem>
             ))}
           </Select>
@@ -151,7 +208,7 @@ export const CustomInput = ({
           {...commonMuiProps}
           id={data.nombre}
           label={data.label}
-          type={data.type}
+          type={data.type === "number" ? "number" : "text"}
           value={muiInputValue}
           onChange={(e) => onValueChange(data.nombre, e.target.value)}
           variant="standard"
@@ -170,7 +227,7 @@ export const CustomInput = ({
       inputElement = (
         <Box display="flex" alignItems="flex-start" width="100%" gap={1}>
           <DatePicker
-            label={data.label} // El DatePicker maneja su propio label flotante
+            label={data.label}
             value={datePickerStateValue}
             onChange={(newValue: Dayjs | null) => {
               setDatePickerStateValue(newValue);
@@ -187,41 +244,46 @@ export const CustomInput = ({
                 helperText: fieldError,
               },
             }}
-            sx={{ flexGrow: 1, width: "auto" }} 
+            sx={{ flexGrow: 1, width: "auto" }}
           />
           {/* Botón "Limpiar" explícito */}
-          {datePickerStateValue !== null &&
-            !commonMuiProps.disabled && ( // Mostrar solo si hay fecha y no está deshabilitado
-              <Button
-                variant="outlined"
-                size="medium"
-                onClick={() => {
-                  setDatePickerStateValue(null); // Actualiza UI del DatePicker
-                  onValueChange(data.nombre, null); // Notifica al padre con null
-                }}
-                aria-label={`Limpiar ${data.label}`}
-                sx={{
-                  ml: 1, // Margen a la izquierda
-                  flexShrink: 0, // Evita que el botón se encoja
-                  alignSelf: "center", // Centrar verticalmente con el DatePicker
-                  height: "56px", // Altura típica de un TextField de MUI para alinear
-                }}
-              >
-                Limpiar
-              </Button>
-            )}
+          {datePickerStateValue !== null && !commonMuiProps.disabled && (
+            <Button
+              variant="outlined"
+              size="medium"
+              onClick={() => {
+                setDatePickerStateValue(null);
+                onValueChange(data.nombre, null);
+              }}
+              aria-label={`Limpiar ${data.label}`}
+              sx={{
+                ml: 1,
+                flexShrink: 0,
+                alignSelf: "center",
+                height: "56px",
+              }}
+            >
+              Limpiar
+            </Button>
+          )}
         </Box>
       );
       break;
 
     case "checkbox":
       inputElement = (
-        <Box display="flex" flexDirection="column" width="100%">
+        <Box
+          display="flex"
+          flexDirection="column"
+          width="100%"
+          alignItems={"center"}
+          mt={2.5}
+        >
           <FormControlLabel
             control={
               <Checkbox
                 name={data.nombre}
-                checked={Boolean(currentFieldValue)}
+                checked={muiInputValue as boolean}
                 onChange={(e) => onValueChange(data.nombre, e.target.checked)}
                 disabled={commonMuiProps.disabled}
               />
@@ -230,6 +292,29 @@ export const CustomInput = ({
           />
           {fieldError && (
             <FormHelperText error sx={{ ml: "14px" }}>
+              {fieldError}
+            </FormHelperText>
+          )}
+        </Box>
+      );
+      break;
+
+    case "switch":
+      inputElement = (
+        <Box display="flex" flexDirection="column" width="100%">
+          <FormControlLabel
+            control={
+              <Switch
+                name={data.nombre}
+                checked={muiInputValue as boolean}
+                onChange={(e) => onValueChange(data.nombre, e.target.checked)}
+                disabled={commonMuiProps.disabled}
+              />
+            }
+            label={data.label}
+          />
+          {fieldError && (
+            <FormHelperText error sx={{ ml: "0px", mt: "-8px" }}>
               {fieldError}
             </FormHelperText>
           )}

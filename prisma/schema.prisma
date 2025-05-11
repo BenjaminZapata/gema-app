@@ -47,6 +47,7 @@ model gastos {
   tipo           TipoGasto
   fecha          String
   observaciones  String?
+  total          Int
 }
 
 model mediosdepago {

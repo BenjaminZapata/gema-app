@@ -1,27 +1,30 @@
 // Importes de terceros
 import { Box, Tooltip } from "@mui/material";
-import { FilterList, Replay } from "@mui/icons-material";
+import { Replay } from "@mui/icons-material";
 // Importes propios
 import { AddProductDialog } from "./dialogs/AddProductDialog";
 import { ChipMenu } from "./ChipMenu";
 import { ChipProductListButton } from "./ChipProductListButton";
 import { NameFilter } from "./NameFilter";
-import { ProductTypes } from "@/types/CommonTypes";
+import { FiltersDialog } from "./dialogs/FiltersDialog";
+import { ProductFiltersStateTypes } from "@/types/CommonTypes";
 
 interface ChipProductListProps {
-  inputValue: string;
-  productList: Array<ProductTypes>;
+  activeFilters: ProductFiltersStateTypes;
+  applyFilters: (filtersFromDialog: ProductFiltersStateTypes) => void;
+  resetAllFilters: () => void;
+  nameInput: string;
   reloadData: () => Promise<void>;
-  setInputValue: (data: string) => void;
-  setProductList: (data: Array<ProductTypes>) => void;
+  setNameInput: (data: string) => void;
 }
 
 export const ChipProductList = ({
-  inputValue,
-  productList,
+  activeFilters,
+  applyFilters,
+  resetAllFilters,
+  nameInput,
   reloadData,
-  setInputValue,
-  setProductList,
+  setNameInput,
 }: ChipProductListProps) => {
   return (
     <Box
@@ -40,12 +43,7 @@ export const ChipProductList = ({
         height: theme.spacing(8),
       })}
     >
-      <NameFilter
-        inputValue={inputValue}
-        productList={productList}
-        setInputValue={setInputValue}
-        setProductsList={setProductList}
-      />
+      <NameFilter nameInput={nameInput} setNameInput={setNameInput} />
 
       <Box display={"flex"} gap={2}>
         <Box>
@@ -53,15 +51,11 @@ export const ChipProductList = ({
           <ChipMenu />
         </Box>
 
-        <Tooltip disableInteractive title="Cambiar filtros">
-          <ChipProductListButton variant="contained" color="info">
-            <FilterList
-              sx={(theme) => ({
-                color: theme.palette.primary.contrastText,
-              })}
-            />
-          </ChipProductListButton>
-        </Tooltip>
+        <FiltersDialog
+          activeFilters={activeFilters}
+          applyFilters={applyFilters}
+          resetAllFilters={resetAllFilters}
+        />
 
         <Tooltip disableInteractive title="Recargar información">
           <ChipProductListButton

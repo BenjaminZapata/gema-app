@@ -9,7 +9,7 @@ import {
   SupplierTypes,
 } from "@/types/CommonTypes";
 import { localURL, status } from "@/utils/Utils";
-import { StatusTypes } from "@/utils/CommonTypes";
+import { StatusTypes } from "@/utils/Commons";
 import { cleanObjectNullValues } from "@/utils/Functions";
 
 interface productsSliceType {

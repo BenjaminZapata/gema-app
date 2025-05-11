@@ -144,6 +144,7 @@ export const AddProductDialog = () => {
         )
       : "Agregar producto";
 
+
   return (
     <>
       <Tooltip disableInteractive title={tooltipTitle}>
@@ -216,8 +217,7 @@ export const AddProductDialog = () => {
           }}
         >
           <Button onClick={handleClose} color="inherit">
-            {" "}
-            Cancelar{" "}
+            Cancelar
           </Button>
           <Button
             color="success"

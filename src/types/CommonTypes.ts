@@ -1,3 +1,4 @@
+//! MYSQL/REDUX
 export interface CategoryTypes {
   id: number;
   nombre: string;
@@ -24,4 +25,13 @@ export interface ProductTypes {
   stock: number;
   stockminimo: number;
   tiendaonline: number;
+}
+
+//! FILTROS LISTA DE PRODUCTOS
+export interface ProductFiltersStateTypes {
+  lowStock: boolean;
+  name: string;
+  price: { min?: number; max?: number };
+  selectedCategoryIds: string[];
+  selectedSupplierIds: string[];
 }

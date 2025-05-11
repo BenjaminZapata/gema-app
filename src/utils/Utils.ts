@@ -86,6 +86,49 @@ export const supplierSchema = z.object({
   pagina: z.string().min(1),
 });
 
+export const filtersSchema = z
+  .object({
+    name: z.string().optional(),
+    lowStock: z
+      .preprocess((val) => {
+        if (typeof val === "boolean") return val;
+        if (val === "true") return true;
+        if (val === "false") return false;
+        return false;
+      }, z.boolean().optional())
+      .describe("Filtrar por productos con stock bajo"),
+    price: z
+      .object({
+        min: z.coerce.number().min(0).optional(),
+        max: z.coerce.number().min(0).optional(),
+      })
+      .optional()
+      .default({ min: undefined, max: undefined })
+      .refine(
+        (data) => {
+          if (data.min !== undefined && data.max !== undefined) {
+            return data.min <= data.max;
+          }
+          return true;
+        },
+        {
+          message: "El precio mínimo no puede ser mayor que el precio máximo",
+          path: ["min"],
+        }
+      )
+      .describe("Rango de precios para filtrar"),
+    selectedCategoryIds: z
+      .array(z.string())
+      .default([])
+      .describe("IDs de las categorías seleccionadas para filtrar"),
+    selectedSupplierIds: z
+      .array(z.string())
+      .default([])
+      .describe("IDs de los proveederos seleccionados para filtrar"),
+  })
+  .strict("Se enviaron campos no esperados en los filtros.")
+  .describe("Schema para validar los filtros de productos");
+
 //^ Utils para forms
 
 interface InputTypes {
@@ -95,7 +138,15 @@ interface InputTypes {
   type: InputTypeTypes;
 }
 
-type InputTypeTypes = "number" | "select" | "text" | "checkbox" | "date";
+type InputTypeTypes =
+  | "number"
+  | "select"
+  | "text"
+  | "checkbox"
+  | "date"
+  | "multiselect_categories"
+  | "multiselect_suppliers"
+  | "switch";
 
 export const addProductsInputs: Array<InputTypes> = [
   {
@@ -190,5 +241,32 @@ export const addSupplierInputs: Array<InputTypes> = [
     label: "Dirección",
     required: true,
     type: "text",
+  },
+];
+
+export const filterDialogInputs: Array<InputTypes> = [
+  {
+    label: "Precio mínimo",
+    nombre: "price.min",
+    required: false,
+    type: "number",
+  },
+  {
+    label: "Precio máximo",
+    nombre: "price.max",
+    required: false,
+    type: "number",
+  },
+  {
+    label: "Con poco stock",
+    nombre: "lowStock",
+    required: false,
+    type: "checkbox",
+  },
+  {
+    label: "Categorias",
+    nombre: "selectedCategoryIds",
+    required: false,
+    type: "multiselect_categories",
   },
 ];

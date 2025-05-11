@@ -5,7 +5,7 @@ import { Box, TableCell, TableRow, Tooltip, Typography } from "@mui/material";
 import { PriorityHigh, Storefront, Warning } from "@mui/icons-material";
 // Importes propios
 import { DeleteSupplierDialog } from "./dialogs/DeleteProductDialog";
-import { ExpirationFunctionType } from "@/utils/CommonTypes";
+import { ExpirationFunctionType } from "@/utils/Commons";
 import { ProductTypes } from "@/types/CommonTypes";
 import { useAppSelector } from "@/hooks/reduxHooks";
 import {
