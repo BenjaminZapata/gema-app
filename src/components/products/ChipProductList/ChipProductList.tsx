@@ -21,7 +21,6 @@ interface ChipProductListProps {
 export const ChipProductList = ({
   activeFilters,
   applyFilters,
-  resetAllFilters,
   nameInput,
   reloadData,
   setNameInput,
@@ -54,7 +53,6 @@ export const ChipProductList = ({
         <FiltersDialog
           activeFilters={activeFilters}
           applyFilters={applyFilters}
-          resetAllFilters={resetAllFilters}
         />
 
         <Tooltip disableInteractive title="Recargar información">

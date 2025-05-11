@@ -7,18 +7,17 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const data: ProductTypes = req.body;
-  const id = parseInt(req.query.id as string);
+  const id = req.query.id;
+  if (!id) res.status(401).json("No se envio un id");
   try {
     switch (req.method) {
       case "DELETE":
-        console.log(id);
         const deletedProduct = await prisma.productos.delete({ where: { id } });
         res
           .status(200)
           .json({ message: "Producto eliminado con exito", deletedProduct });
         break;
       case "PUT":
-        console.log(data);
         const expireTime = data.fechavencimiento
           ? new Date(data.fechavencimiento).getTime()
           : null;
@@ -36,7 +35,7 @@ export default async function handler(
           proveedor: Number(data.proveedor),
         };
         const updatedProduct = await prisma.productos.update({
-          where: { id: Number(data.id) },
+          where: { id: data.id },
           data: updatedData,
         });
         res.status(201).json(updatedProduct);

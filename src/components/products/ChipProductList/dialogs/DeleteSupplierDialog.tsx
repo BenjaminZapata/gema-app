@@ -1,7 +1,7 @@
 // Importes de React
-import { useState } from 'react';
+import { useState } from "react";
 // Importes de terceros
-import { toast } from 'sonner';
+import { toast } from "sonner";
 import {
   Button,
   Dialog,
@@ -12,10 +12,13 @@ import {
   MenuItem,
   Select,
   SelectChangeEvent,
-} from '@mui/material';
+} from "@mui/material";
 // Importes propios
-import { useAppDispatch, useAppSelector } from '../../../../hooks/reduxHooks';
-import { deleteSupplier, getSuppliers } from '../../../../redux/slices/productsSlice';
+import { useAppDispatch, useAppSelector } from "../../../../hooks/reduxHooks";
+import {
+  deleteSupplier,
+  getSuppliers,
+} from "../../../../redux/slices/productsSlice";
 
 export const DeleteSupplierDialog = ({
   open = false,
@@ -24,12 +27,12 @@ export const DeleteSupplierDialog = ({
   open: boolean;
   setOpen: (data: boolean) => void;
 }) => {
-  const [selectedSupplier, setSelectedSupplier] = useState<string>('');
+  const [selectedSupplier, setSelectedSupplier] = useState<string>("");
   const dispatch = useAppDispatch();
   const { suppliers } = useAppSelector((state) => state.productos);
 
   const handleDialogClose = () => {
-    setSelectedSupplier('');
+    setSelectedSupplier("");
     setOpen(false);
   };
 
@@ -38,7 +41,7 @@ export const DeleteSupplierDialog = ({
   };
 
   if (open && !suppliers?.length) {
-    toast.error('No hay proveedores cargados');
+    toast.error("No hay proveedores cargados");
     setOpen(false);
   }
 
@@ -48,32 +51,38 @@ export const DeleteSupplierDialog = ({
       onClose={handleDialogClose}
       open={open}
       PaperProps={{
-        component: 'form',
+        component: "form",
         onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
           event.preventDefault();
           try {
             const sendData = async () => {
-              await dispatch(deleteSupplier(Number(selectedSupplier)));
+              await dispatch(deleteSupplier(selectedSupplier));
               await dispatch(getSuppliers());
             };
             sendData();
             handleDialogClose();
           } catch (err) {
-            toast.error(err.issues[0].message);
+            if (err instanceof Error) {
+              toast.error(err.message);
+            } else toast.error("ERROR: No se pudo borrar el proveedor");
           }
         },
-        
-      }}>
+      }}
+    >
       <DialogTitle>Eliminar un proveedor</DialogTitle>
       <DialogContent>
-        <InputLabel id='deleteSupplierSelect' sx={(theme) => ({ marginBottom: theme.spacing(1) })}>
+        <InputLabel
+          id="deleteSupplierSelect"
+          sx={(theme) => ({ marginBottom: theme.spacing(1) })}
+        >
           Proveedor
         </InputLabel>
         <Select
-          labelId='deleteSupplierSelect'
+          labelId="deleteSupplierSelect"
           value={selectedSupplier}
           onChange={handleChange}
-          sx={{ minWidth: '60%' }}>
+          sx={{ minWidth: "60%" }}
+        >
           {suppliers?.map((c) => (
             <MenuItem key={c.id} value={c.id}>
               {c.nombre}
@@ -82,10 +91,15 @@ export const DeleteSupplierDialog = ({
         </Select>
       </DialogContent>
       <DialogActions sx={(theme) => ({ color: theme.palette.common.black })}>
-        <Button onClick={handleDialogClose} color='inherit'>
+        <Button onClick={handleDialogClose} color="inherit">
           Cancelar
         </Button>
-        <Button type='submit' color='error' variant='contained' disabled={selectedSupplier === ''}>
+        <Button
+          type="submit"
+          color="error"
+          variant="contained"
+          disabled={selectedSupplier === ""}
+        >
           Eliminar
         </Button>
       </DialogActions>

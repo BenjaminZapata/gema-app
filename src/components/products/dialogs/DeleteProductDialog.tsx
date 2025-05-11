@@ -53,13 +53,13 @@ export const DeleteSupplierDialog = ({
             event.preventDefault();
             try {
               const sendData = async () => {
-                await dispatch(deleteProduct(Number(product.id)));
+                await dispatch(deleteProduct(String(product.id)));
                 await dispatch(getProducts());
               };
               sendData();
               handleDialogClose();
-            } catch (err) {
-              toast.error(err.issues[0].message);
+            } catch {
+              toast.error("Hubo un error al eliminar " + product.nombre);
             }
           },
           sx: (theme) => ({ width: "40vw", minWidth: theme.spacing(50) }),

@@ -6,7 +6,7 @@ export interface CategoryTypes {
 
 export interface SupplierTypes {
   direccion: string;
-  id: number;
+  id?: number;
   nombre: string;
   pagina: string;
   telefono: string;
@@ -30,7 +30,7 @@ export interface ProductTypes {
 //! FILTROS LISTA DE PRODUCTOS
 export interface ProductFiltersStateTypes {
   lowStock: boolean;
-  name: string;
+  name?: string | undefined;
   price: { min?: number; max?: number };
   selectedCategoryIds: string[];
   selectedSupplierIds: string[];

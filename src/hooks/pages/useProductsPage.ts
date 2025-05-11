@@ -124,12 +124,6 @@ export const useProductsPage = () => {
     []
   );
 
-  //? Función - Reset de filtros
-  const resetAllFilters = useCallback(() => {
-    setNameInput("");
-    setActiveFilters(initialFiltersState);
-  }, []);
-
   //? useEffect - Filtro de productos
   useEffect(() => {
     if (!productsDataFromStore) {
@@ -147,6 +141,7 @@ export const useProductsPage = () => {
           String(p.id).includes(lowercasedInput)
       );
     }
+
     //* Por categoria
     if (activeFilters.selectedCategoryIds.length > 0) {
       filtered = filtered.filter(
@@ -155,9 +150,23 @@ export const useProductsPage = () => {
           activeFilters.selectedCategoryIds.includes(p.categoria.toString())
       );
     }
+
     //* Por stock
     if (activeFilters.lowStock == true) {
       filtered = filtered.filter((p) => p.stock <= p.stockminimo);
+    }
+
+    //* Por precio
+    const priceFilter = activeFilters.price;
+    if (priceFilter) {
+      if (typeof priceFilter.min === "number") {
+        const minPrice = priceFilter.min;
+        filtered = filtered.filter((p) => p.precioventa >= minPrice);
+      }
+      if (typeof priceFilter.max === "number") {
+        const maxPrice = priceFilter.max;
+        filtered = filtered.filter((p) => p.precioventa <= maxPrice);
+      }
     }
 
     setProductList(filtered);
@@ -175,7 +184,6 @@ export const useProductsPage = () => {
     page,
     productList,
     reloadData,
-    resetAllFilters,
     setNameInput,
   };
 };

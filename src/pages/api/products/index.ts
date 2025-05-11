@@ -32,7 +32,7 @@ export default async function handler(
             precioventa: Number(data.precioventa),
             stock: Number(data.stock),
             stockminimo: Number(data.stockminimo),
-            tiendaonline: Boolean(data.tiendaonline),
+            tiendaonline: data.tiendaonline ? data.tiendaonline : 0,
             categoria: Number(data.categoria),
             id: Number(data.id),
             observaciones: data.observaciones ?? "",

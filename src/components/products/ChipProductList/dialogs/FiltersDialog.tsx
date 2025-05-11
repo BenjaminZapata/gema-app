@@ -22,11 +22,9 @@ type FiltersFormData = z.infer<typeof filtersSchema>;
 export const FiltersDialog = ({
   activeFilters,
   applyFilters,
-  resetAllFilters,
 }: {
   activeFilters: ProductFiltersStateTypes;
   applyFilters: (filtersFromDialog: ProductFiltersStateTypes) => void;
-  resetAllFilters: () => void;
 }) => {
   //? Función - Obtener valores de los filtros
   const getInitialFormValues = useCallback((): FiltersFormData => {
@@ -90,7 +88,10 @@ export const FiltersDialog = ({
     return false;
   };
 
-  const handleInputChange = (name: string, value: any) => {
+  const handleInputChange = (
+    name: string,
+    value: string | string[] | boolean | number
+  ) => {
     if (name.startsWith("price.")) {
       const priceField = name.split(".")[1] as "min" | "max";
       setFormData((prev) => {
@@ -184,7 +185,7 @@ export const FiltersDialog = ({
               | undefined
               | Record<string, number> => {
               if (name.startsWith("price.")) {
-                const parts = name.split("");
+                const parts = name.split(".");
                 const priceObj = formData.price;
                 return priceObj?.[parts[1] as "min" | "max"];
               }

@@ -19,7 +19,7 @@ model categorias {
 model detalledeventas {
   id              Int       @id @default(autoincrement())
   ventacodigo     Int
-  productocodigo  Int
+  productocodigo  String
   cantidad        Int
   preciounitario  Int
 
@@ -59,7 +59,7 @@ model mediosdepago {
 }
 
 model productos {
-  id                Int       @id @default(autoincrement())
+  id                String       @id
   nombre            String
   categoria         Int
   preciocompra      Int

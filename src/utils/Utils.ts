@@ -95,7 +95,7 @@ export const filtersSchema = z
         if (val === "true") return true;
         if (val === "false") return false;
         return false;
-      }, z.boolean().optional())
+      }, z.boolean().optional().default(false))
       .describe("Filtrar por productos con stock bajo"),
     price: z
       .object({
