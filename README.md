@@ -49,8 +49,8 @@ Para ejecutar este proyecto en tu entorno local, sigue estos pasos generales:
 2.  **Clonar el Repositorio:**
 
     ```bash
-    git clone https://[URL-DEL-REPOSITORIO-EN-GITHUB].git
-    cd [NOMBRE-DEL-DIRECTORIO-DEL-PROYECTO]
+    git clone https://github.com/BenjaminZapata/gema-app.git
+    cd gema-app
     ```
 
 3.  **Instalar Dependencias:**
