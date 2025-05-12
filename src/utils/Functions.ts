@@ -24,11 +24,12 @@ export const getExpirationDate = (
   product: ProductTypes
 ): ExpirationFunctionType => {
   if (!product.fechavencimiento) return { expiresSoon: false };
-  const dateDifference = product.fechavencimiento - Date.now() < 1209600000;
+  const dateDifference =
+    Number(product.fechavencimiento) - Date.now() < 1209600000;
   if (!dateDifference) {
     return { expiresSoon: false };
   }
-  const days = (product.fechavencimiento - Date.now()) / 86400000;
+  const days = (Number(product.fechavencimiento) - Date.now()) / 86400000;
   return {
     color: days < 0 ? "inherit" : days <= 14 ? "error" : "warning",
     expiresSoon: true,

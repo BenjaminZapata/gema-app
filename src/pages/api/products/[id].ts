@@ -8,7 +8,14 @@ export default async function handler(
 ) {
   const data: ProductTypes = req.body;
   const id = req.query.id;
-  if (!id) res.status(401).json("No se envio un id");
+  if (typeof id === "undefined") {
+    return res.status(400).json({ error: "No se envió un ID de producto" });
+  }
+  if (Array.isArray(id)) {
+    return res
+      .status(400)
+      .json({ error: "Se recibió más de un ID de producto" });
+  }
   try {
     switch (req.method) {
       case "DELETE":
@@ -18,6 +25,7 @@ export default async function handler(
           .json({ message: "Producto eliminado con exito", deletedProduct });
         break;
       case "PUT":
+        console.log(data.tiendaonline);
         const expireTime = data.fechavencimiento
           ? new Date(data.fechavencimiento).getTime()
           : null;
@@ -29,13 +37,13 @@ export default async function handler(
           precioventa: Number(data.precioventa),
           stock: Number(data.stock),
           stockminimo: Number(data.stockminimo),
-          tiendaonline: String(data.tiendaonline) == "true",
+          tiendaonline: String(data.tiendaonline) == "true" ? 1 : 0,
           categoria: Number(data.categoria),
           observaciones: data.observaciones ?? "",
           proveedor: Number(data.proveedor),
         };
         const updatedProduct = await prisma.productos.update({
-          where: { id: data.id },
+          where: { id: id },
           data: updatedData,
         });
         res.status(201).json(updatedProduct);

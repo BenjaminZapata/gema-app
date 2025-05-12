@@ -1,7 +1,7 @@
 // Importes de React
-import { useState } from 'react';
+import { useState } from "react";
 // Importes de terceros
-import { toast } from 'sonner';
+import { toast } from "sonner";
 import {
   Button,
   Dialog,
@@ -12,10 +12,13 @@ import {
   MenuItem,
   Select,
   SelectChangeEvent,
-} from '@mui/material';
+} from "@mui/material";
 // Importes propios
-import { useAppDispatch, useAppSelector } from '../../../../hooks/reduxHooks';
-import { deleteCategory, getCategories } from '../../../../redux/slices/productsSlice';
+import { useAppDispatch, useAppSelector } from "../../../../hooks/reduxHooks";
+import {
+  deleteCategory,
+  getCategories,
+} from "../../../../redux/slices/productsSlice";
 
 export const DeleteCategoryDialog = ({
   open = false,
@@ -24,12 +27,13 @@ export const DeleteCategoryDialog = ({
   open: boolean;
   setOpen: (data: boolean) => void;
 }) => {
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
   const dispatch = useAppDispatch();
   const { categories } = useAppSelector((state) => state.productos);
+  const [categoriesCopy, setCategoriesCopy] = useState([...categories]);
 
   const handleDialogClose = () => {
-    setSelectedCategory('');
+    setSelectedCategory("");
     setOpen(false);
   };
 
@@ -38,7 +42,7 @@ export const DeleteCategoryDialog = ({
   };
 
   if (open && !categories?.length) {
-    toast.error('No hay categorias cargadas');
+    toast.error("No hay categorias cargadas");
     setOpen(false);
   }
 
@@ -48,12 +52,12 @@ export const DeleteCategoryDialog = ({
       onClose={handleDialogClose}
       open={open}
       PaperProps={{
-        component: 'form',
+        component: "form",
         onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
           event.preventDefault();
           try {
             const sendData = async () => {
-              await dispatch(deleteCategory(Number(selectedCategory)));
+              await dispatch(deleteCategory(selectedCategory));
               await dispatch(getCategories());
             };
             sendData();
@@ -62,30 +66,46 @@ export const DeleteCategoryDialog = ({
             toast.error(err.issues[0].message);
           }
         },
-        sx: (theme) => ({ width: '40vw', minWidth: theme.spacing(50) }),
-      }}>
+        sx: (theme) => ({ width: "40vw", minWidth: theme.spacing(50) }),
+      }}
+    >
       <DialogTitle>Eliminar una categoria</DialogTitle>
       <DialogContent>
-        <InputLabel id='DeleteCategorySelect' sx={(theme) => ({ marginBottom: theme.spacing(1) })}>
+        <InputLabel
+          id="DeleteCategorySelect"
+          sx={(theme) => ({ marginBottom: theme.spacing(1) })}
+        >
           Categoria
         </InputLabel>
         <Select
-          labelId='DeleteCategorySelect'
+          labelId="DeleteCategorySelect"
           value={selectedCategory}
           onChange={handleChange}
-          sx={{ minWidth: '60%' }}>
-          {categories?.map((c) => (
-            <MenuItem key={c.id} value={c.id}>
-              {c.nombre}
-            </MenuItem>
-          ))}
+          sx={{ minWidth: "60%" }}
+        >
+          {categoriesCopy
+            ?.sort(function (a, b) {
+              if (a.nombre < b.nombre) return -1;
+              if (b.nombre < a.nombre) return 1;
+              return 0;
+            })
+            .map((c) => (
+              <MenuItem key={c.id} value={c.id}>
+                {c.nombre}
+              </MenuItem>
+            ))}
         </Select>
       </DialogContent>
       <DialogActions sx={(theme) => ({ color: theme.palette.common.black })}>
-        <Button onClick={handleDialogClose} color='inherit'>
+        <Button onClick={handleDialogClose} color="inherit">
           Cancelar
         </Button>
-        <Button type='submit' color='error' variant='contained' disabled={selectedCategory === ''}>
+        <Button
+          type="submit"
+          color="error"
+          variant="contained"
+          disabled={selectedCategory === ""}
+        >
           Eliminar
         </Button>
       </DialogActions>

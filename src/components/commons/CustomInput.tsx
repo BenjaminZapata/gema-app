@@ -185,16 +185,30 @@ export const CustomInput = ({
                 : undefined
             }
           >
-            {selectOptions.map((opt) => (
-              <MenuItem key={opt.value} value={opt.value}>
-                {isMultiple && (
-                  <Checkbox
-                    checked={(muiInputValue as string[]).includes(opt.value)}
-                  />
-                )}
-                {opt.label}
-              </MenuItem>
-            ))}
+            {selectOptions
+              .sort(function (a, b) {
+                if (a.label < b.label) return -1;
+                if (b.label < a.label) return 1;
+                return 0;
+              })
+              .map((opt) => (
+                <MenuItem
+                  key={opt.value}
+                  value={opt.value}
+                  sx={(theme) => ({
+                    fontSize: theme.spacing(1.5),
+                    paddingY: theme.spacing(0),
+                    paddingX: theme.spacing(1),
+                  })}
+                >
+                  {isMultiple && (
+                    <Checkbox
+                      checked={(muiInputValue as string[]).includes(opt.value)}
+                    />
+                  )}
+                  {opt.label}
+                </MenuItem>
+              ))}
           </Select>
           {fieldError && <FormHelperText error>{fieldError}</FormHelperText>}
         </Box>

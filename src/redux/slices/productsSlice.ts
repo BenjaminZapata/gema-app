@@ -50,9 +50,9 @@ export const addCategory = createAsyncThunk(
 
 export const deleteCategory = createAsyncThunk(
   "products/deleteCategories",
-  async (id: number) => {
+  async (id: string) => {
     try {
-      const res = await axios.delete(`${localURL}/api/categories?id=${id}`);
+      const res = await axios.delete(`${localURL}/api/categories/${id}`);
       toast.success("Se ha eliminado la categoria");
       return res.data;
     } catch {
@@ -151,7 +151,7 @@ export const deleteSupplier = createAsyncThunk(
   "products/deleteSuppliers",
   async (id: string) => {
     try {
-      const res = await axios.delete(`${localURL}/api/suppliers?id=${id}`);
+      const res = await axios.delete(`${localURL}/api/suppliers/${id}`);
       toast.success("Se ha eliminado el proveedor");
       return res.data;
     } catch {
