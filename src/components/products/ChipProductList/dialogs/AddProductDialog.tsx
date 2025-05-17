@@ -25,8 +25,11 @@ import { CustomInput } from "@/components/commons/CustomInput";
 import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
 
 // Helper para inicializar el formulario para un nuevo producto
-const getInitialFormValues = (): Record<string, any> => {
-  const defaults: Record<string, any> = {};
+const getInitialFormValues = (): Record<
+  string,
+  string | string[] | number | null
+> => {
+  const defaults: Record<string, string | string[] | number | null> = {};
   addProductsInputs.forEach((input) => {
     if (input.nombre === "tiendaonline") {
       defaults[input.nombre] = "false";
@@ -46,7 +49,9 @@ export const AddProductDialog = () => {
   const theme = useTheme();
 
   const [formData, setFormData] =
-    useState<Record<string, any>>(getInitialFormValues);
+    useState<Record<string, string | string[] | number | null>>(
+      getInitialFormValues
+    );
   const [isFormInvalid, setIsFormInvalid] = useState<boolean>(true);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [fieldErrors, setFieldErrors] = useState<
@@ -94,7 +99,10 @@ export const AddProductDialog = () => {
     }
   }, [formData, open, categories, suppliers]);
 
-  const handleInputChange = (name: string, value: any) => {
+  const handleInputChange = (
+    name: string,
+    value: string | string[] | number | null
+  ) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -144,7 +152,6 @@ export const AddProductDialog = () => {
         )
       : "Agregar producto";
 
-
   return (
     <>
       <Tooltip disableInteractive title={tooltipTitle}>
@@ -173,7 +180,7 @@ export const AddProductDialog = () => {
         onClose={handleClose}
         PaperProps={{
           component: "form",
-          onSubmit: (e) => {
+          onSubmit: (e: React.FormEvent) => {
             e.preventDefault();
             handleActualSubmit();
           },

@@ -25,14 +25,18 @@ export default async function handler(
           .json({ message: "Producto eliminado con exito", deletedProduct });
         break;
       case "PUT":
-        console.log(data.tiendaonline);
-        const expireTime = data.fechavencimiento
-          ? new Date(data.fechavencimiento).getTime()
-          : null;
+        let fechaVencimientoParaPrisma: Date | null = null;
+        if (data.fechavencimiento) {
+          const parsedDate = new Date(data.fechavencimiento);
+          if (!isNaN(parsedDate.getTime())) {
+            fechaVencimientoParaPrisma = parsedDate;
+          }
+        }
+
         const updatedData = {
           nombre: data.nombre,
-          fechamodificacion: String(Date.now()),
-          fechavencimiento: String(expireTime),
+          fechamodificacion: new Date(),
+          fechavencimiento: fechaVencimientoParaPrisma,
           preciocompra: Number(data.preciocompra),
           precioventa: Number(data.precioventa),
           stock: Number(data.stock),
@@ -42,6 +46,7 @@ export default async function handler(
           observaciones: data.observaciones ?? "",
           proveedor: Number(data.proveedor),
         };
+
         const updatedProduct = await prisma.productos.update({
           where: { id: id },
           data: updatedData,

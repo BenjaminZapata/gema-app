@@ -151,7 +151,7 @@ type InputTypeTypes =
 export const addProductsInputs: Array<InputTypes> = [
   {
     nombre: "id",
-    label: "Codigo",
+    label: "Código",
     required: true,
     type: "text",
   },
@@ -163,7 +163,7 @@ export const addProductsInputs: Array<InputTypes> = [
   },
   {
     nombre: "categoria",
-    label: "Categoria",
+    label: "Categoría",
     required: true,
     type: "select",
   },
@@ -264,7 +264,7 @@ export const filterDialogInputs: Array<InputTypes> = [
     type: "checkbox",
   },
   {
-    label: "Categorias",
+    label: "categorías",
     nombre: "selectedCategoryIds",
     required: false,
     type: "multiselect_categories",

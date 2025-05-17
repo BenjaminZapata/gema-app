@@ -27,10 +27,10 @@ export const ProductList = ({
   const columnNames = [
     "ID",
     "Nombre",
-    "Categoria",
+    "Categoría",
     "Precio",
     "Stock",
-    "Ultima modificación",
+    "Última modificación",
     "Acciones",
   ];
 
@@ -58,8 +58,8 @@ export const ProductList = ({
                   <TableCell colSpan={7} sx={{ borderLeft: "none" }}>
                     <Typography m={3} fontWeight={300} textAlign={"center"}>
                       {nameInput.length
-                        ? ` No existen productos que contengan "${nameInput}" en su nombre`
-                        : "¡Parece que no has agregado ningun producto todavia!"}
+                        ? `No existen productos que contengan "${nameInput}" en su nombre`
+                        : "¡Parece que no has agregado ningún producto todavía!"}
                     </Typography>
                   </TableCell>
                 </TableRow>

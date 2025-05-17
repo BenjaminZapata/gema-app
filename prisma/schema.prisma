@@ -45,7 +45,7 @@ model gastos {
   id             Int       @id @default(autoincrement())
   nombre         String
   tipo           TipoGasto
-  fecha          String
+  fecha          DateTime @db.DateTime(3)
   observaciones  String?
   total          Int
 }
@@ -67,10 +67,10 @@ model productos {
   stock             Int
   stockminimo       Int
   tiendaonline      Int
-  fechavencimiento  String?
+  fechavencimiento  DateTime? @db.DateTime(3)
   proveedor         Int
   observaciones     String?
-  fechamodificacion String
+  fechamodificacion DateTime @db.DateTime(3)
 
   categoria_fk categorias @relation(fields: [categoria], references: [id])
   proveedor_fk proveedor  @relation(fields: [proveedor], references: [id])

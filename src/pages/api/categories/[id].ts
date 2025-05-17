@@ -15,7 +15,7 @@ export default async function handler(
         });
         res
           .status(200)
-          .json({ message: "Categoria eliminada con exito", deletedProduct });
+          .json({ message: "Categoría eliminada con exito", deletedProduct });
         break;
     }
   } catch (error) {

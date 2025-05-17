@@ -197,7 +197,7 @@ export const CustomInput = ({
                   value={opt.value}
                   sx={(theme) => ({
                     fontSize: theme.spacing(1.5),
-                    paddingY: theme.spacing(0),
+                    paddingY: theme.spacing(0.5),
                     paddingX: theme.spacing(1),
                   })}
                 >
@@ -245,7 +245,10 @@ export const CustomInput = ({
             value={datePickerStateValue}
             onChange={(newValue: Dayjs | null) => {
               setDatePickerStateValue(newValue);
-              onValueChange(data.nombre, newValue);
+              onValueChange(
+                data.nombre,
+                newValue ? newValue.toISOString() : null
+              );
             }}
             disabled={commonMuiProps.disabled}
             slotProps={{

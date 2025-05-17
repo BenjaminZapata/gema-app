@@ -83,9 +83,12 @@ export const ProductRow = ({ product }: ProductRowProps) => {
         <TableCell sx={{ textAlign: "center" }}>{stock}</TableCell>
         <TableCell>
           {fechamodificacion && (
-            <Tooltip disableInteractive title={getDate(fechamodificacion)}>
+            <Tooltip
+              disableInteractive
+              title={getDate(String(fechamodificacion))}
+            >
               <Typography fontSize={"14px"}>
-                {getLastModification(fechamodificacion)}
+                {getLastModification(String(fechamodificacion))}
               </Typography>
             </Tooltip>
           )}

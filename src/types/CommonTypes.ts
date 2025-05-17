@@ -14,9 +14,9 @@ export interface SupplierTypes {
 
 export interface ProductTypes {
   categoria: number;
-  fechamodificacion?: number;
+  fechamodificacion?: Date | null;
   fechavencimiento: Date | null;
-  id: number;
+  id: string;
   nombre: string;
   observaciones: null | string | undefined;
   preciocompra: number;

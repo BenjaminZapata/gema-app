@@ -11,30 +11,30 @@ export default async function handler(
     switch (req.method) {
       case "GET":
         const products = await prisma.productos.findMany();
-        const productsMapped = products.map((p) => ({
-          ...p,
-          fechamodificacion: Number(p.fechamodificacion),
-          fechavencimiento:
-            p.fechavencimiento == null ? null : Number(p.fechavencimiento),
-        }));
-        res.status(200).json(productsMapped);
+        res.status(200).json(products);
         break;
       case "POST":
-        const expireTime = data.fechavencimiento
-          ? new Date(data.fechavencimiento).getTime()
-          : null;
+        let fechaVencimientoParaPrisma: Date | null = null;
+        if (data.fechavencimiento) {
+          // requestBody.fechavencimiento puede ser un string ISO, epoch ms, o un string de fecha
+          const parsedDate = new Date(data.fechavencimiento);
+          if (!isNaN(parsedDate.getTime())) {
+            fechaVencimientoParaPrisma = parsedDate;
+          }
+        }
+
         const product = await prisma.productos.create({
           data: {
             nombre: data.nombre,
-            fechamodificacion: String(Date.now()),
-            fechavencimiento: String(expireTime),
+            fechamodificacion: new Date(),
+            fechavencimiento: fechaVencimientoParaPrisma,
             preciocompra: Number(data.preciocompra),
             precioventa: Number(data.precioventa),
             stock: Number(data.stock),
             stockminimo: Number(data.stockminimo),
             tiendaonline: data.tiendaonline ? data.tiendaonline : 0,
             categoria: Number(data.categoria),
-            id: Number(data.id),
+            id: String(data.id),
             observaciones: data.observaciones ?? "",
             proveedor: Number(data.proveedor),
           },

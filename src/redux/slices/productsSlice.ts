@@ -32,7 +32,7 @@ const initialState: productsSliceType = {
   statusSuppliers: "idle",
 };
 
-//* Categorias
+//* categorías
 export const addCategory = createAsyncThunk(
   "products/addCategories",
   async (nombre: string) => {
@@ -40,10 +40,10 @@ export const addCategory = createAsyncThunk(
       const res = await axios.post(`${localURL}/api/categories`, {
         nombre: nombre,
       });
-      toast.success("Se ha creado la categoria");
+      toast.success("Se ha creado la categoría");
       return res.data;
     } catch {
-      toast.error("ERROR: No se pudo eliminar la categoria");
+      toast.error("ERROR: No se pudo eliminar la categoría");
     }
   }
 );
@@ -53,10 +53,10 @@ export const deleteCategory = createAsyncThunk(
   async (id: string) => {
     try {
       const res = await axios.delete(`${localURL}/api/categories/${id}`);
-      toast.success("Se ha eliminado la categoria");
+      toast.success("Se ha eliminado la categoría");
       return res.data;
     } catch {
-      toast.error("ERROR: No se pudo eliminar la categoria");
+      toast.error("ERROR: No se pudo eliminar la categoría");
     }
   }
 );
@@ -68,7 +68,7 @@ export const getCategories = createAsyncThunk(
       const res = await axios.get(`${localURL}/api/categories`);
       return res.data;
     } catch {
-      toast.error("ERROR: No se pudo obtener las categorias");
+      toast.error("ERROR: No se pudo obtener las categorías");
     }
   }
 );

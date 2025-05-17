@@ -30,7 +30,6 @@ export const DeleteCategoryDialog = ({
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const dispatch = useAppDispatch();
   const { categories } = useAppSelector((state) => state.productos);
-  const [categoriesCopy, setCategoriesCopy] = useState([...categories]);
 
   const handleDialogClose = () => {
     setSelectedCategory("");
@@ -42,7 +41,7 @@ export const DeleteCategoryDialog = ({
   };
 
   if (open && !categories?.length) {
-    toast.error("No hay categorias cargadas");
+    toast.error("No hay categorías cargadas");
     setOpen(false);
   }
 
@@ -69,13 +68,13 @@ export const DeleteCategoryDialog = ({
         sx: (theme) => ({ width: "40vw", minWidth: theme.spacing(50) }),
       }}
     >
-      <DialogTitle>Eliminar una categoria</DialogTitle>
+      <DialogTitle>Eliminar una categoría</DialogTitle>
       <DialogContent>
         <InputLabel
           id="DeleteCategorySelect"
           sx={(theme) => ({ marginBottom: theme.spacing(1) })}
         >
-          Categoria
+          Categoría
         </InputLabel>
         <Select
           labelId="DeleteCategorySelect"
@@ -83,7 +82,7 @@ export const DeleteCategoryDialog = ({
           onChange={handleChange}
           sx={{ minWidth: "60%" }}
         >
-          {categoriesCopy
+          {categories
             ?.sort(function (a, b) {
               if (a.nombre < b.nombre) return -1;
               if (b.nombre < a.nombre) return 1;

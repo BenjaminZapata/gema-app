@@ -42,7 +42,7 @@ export const useProductsPage = () => {
     else setLoading(false);
   }, [statusCategories, statusProducts, statusSuppliers]);
 
-  // useEffect - Carga de categorias, proveedores y productos
+  // useEffect - Carga de categorías, proveedores y productos
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -65,7 +65,7 @@ export const useProductsPage = () => {
     setProductList(productsDataFromStore);
   }, [productsDataFromStore]);
 
-  // Función - Recarga de información (proveedores, productos y categorias)
+  // Función - Recarga de información (proveedores, productos y categorías)
   const reloadData = useCallback(async () => {
     setLoading(true);
     try {
@@ -102,7 +102,7 @@ export const useProductsPage = () => {
     setPage(value);
   }, []);
 
-  //? Función - Filtro por categorias
+  //? Función - Filtro por categorías
   const handleCategoryFilterChange = useCallback((categoryIds: string[]) => {
     setActiveFilters((prev) => ({ ...prev, selectedCategoryIds: categoryIds }));
   }, []);
@@ -142,7 +142,7 @@ export const useProductsPage = () => {
       );
     }
 
-    //* Por categoria
+    //* Por categoría
     if (activeFilters.selectedCategoryIds.length > 0) {
       filtered = filtered.filter(
         (p) =>

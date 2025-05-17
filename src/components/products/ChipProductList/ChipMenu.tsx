@@ -26,7 +26,7 @@ export const ChipMenu = () => {
     <>
       <Tooltip
         disableInteractive
-        title="Administrar categorias y proveedores"
+        title="Administrar categorías y proveedores"
         sx={(theme) => ({
           width: `${theme.spacing(2.5)} !important`,
         })}
@@ -56,7 +56,7 @@ export const ChipMenu = () => {
             setAddCategoryOpen(true);
           }}
         >
-          Agregar categoria
+          Agregar categoría
         </MenuItem>
         <MenuItem
           onClick={() => {
@@ -64,7 +64,7 @@ export const ChipMenu = () => {
             setDeleteCategoryOpen(true);
           }}
         >
-          Eliminar categoria
+          Eliminar categoría
         </MenuItem>
         <MenuItem
           onClick={() => {

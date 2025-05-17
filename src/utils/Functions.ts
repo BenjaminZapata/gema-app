@@ -1,21 +1,47 @@
 // Importes propios
 
-import { ProductTypes, SupplierTypes } from "@/types/CommonTypes";
+import { ProductTypes } from "@/types/CommonTypes";
 import { ExpirationFunctionType } from "./Commons";
 
-export const getDate = (date: number) => {
-  const formatedDate = new Date(date).toLocaleString("es-ES", {
+const FOURTEEN_DAYS_IN_MS = 14 * 24 * 60 * 60 * 1000;
+const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
+
+/**
+ * Formatea un objeto Date a un string con formato DD de MMMM de AAAA (ej: "07 de may., 2024").
+ * @param date Parametro de tipo Date expresado en formato string a formatear.
+ * @returns Un string con la fecha formateada o "Fecha inválida" si la entrada no es una Date válida.
+ */
+export const getDate = (date: string) => {
+  const dateObject = new Date(date);
+  return dateObject.toLocaleString("es-ES", {
     day: "2-digit",
-    month: "short",
+    month: "long",
     year: "numeric",
   });
-  return formatedDate;
 };
 
-export const getLastModification = (date: number) => {
-  const days = Number(((Date.now() - Number(date)) / 86400000).toFixed(0));
-  if (days < 7) {
-    return "Hace menos de una semana";
+/**
+ * Calcula un string descriptivo de hace cuánto tiempo ocurrió una fecha de modificación.
+ * @param date Parametro de tipo Date expresado en formato string de la última modificación.
+ * @returns Un string como "Hace menos de una semana", "Hace X días" o mensajes de error/estado.
+ */
+export const getLastModification = (date: string) => {
+  const dateObject = new Date(date);
+  if (
+    !dateObject ||
+    !(dateObject instanceof Date) ||
+    isNaN(dateObject.getTime())
+  ) {
+    return "Fecha inválida";
+  }
+  const modificationTimestamp = dateObject.getTime();
+  const now = Date.now();
+
+  const diffMilliseconds = now - modificationTimestamp;
+
+  const days = Number((diffMilliseconds / ONE_DAY_IN_MS).toFixed(0));
+  if (days < 28) {
+    return "Hace menos de un mes";
   }
   return `Hace ${days} dias`;
 };
@@ -23,41 +49,43 @@ export const getLastModification = (date: number) => {
 export const getExpirationDate = (
   product: ProductTypes
 ): ExpirationFunctionType => {
-  if (!product.fechavencimiento) return { expiresSoon: false };
-  const dateDifference =
-    Number(product.fechavencimiento) - Date.now() < 1209600000;
-  if (!dateDifference) {
+  const dateObject = new Date(String(product.fechavencimiento));
+  if (
+    !dateObject ||
+    !(dateObject instanceof Date) ||
+    isNaN(dateObject.getTime())
+  )
+    return { expiresSoon: false };
+
+  const expirationTime = dateObject.getTime();
+  const now = Date.now();
+  const diffMilliseconds = expirationTime - now;
+  if (diffMilliseconds >= FOURTEEN_DAYS_IN_MS) {
     return { expiresSoon: false };
   }
-  const days = (Number(product.fechavencimiento) - Date.now()) / 86400000;
-  return {
-    color: days < 0 ? "inherit" : days <= 14 ? "error" : "warning",
-    expiresSoon: true,
-    message:
-      days > 0
-        ? `Expira ${
-            Number(days.toFixed(0)) > 0 ? `en ${days.toFixed(0)} dias` : "hoy"
-          }`
-        : "El producto ya expiro",
-  };
-};
 
-export const getFormData = (event: React.FormEvent<HTMLFormElement>) => {
-  const formData = new FormData(event.currentTarget);
-  const data: Record<string, unknown> | ProductTypes | SupplierTypes = {};
+  const daysRemaining = diffMilliseconds / ONE_DAY_IN_MS;
+  const color = daysRemaining < 8 ? "error" : "warning";
+  let message: string;
+  if (daysRemaining <= 0) {
+    message = "El producto ya expiro";
+  } else {
+    const roundedDaysForMessage = Math.round(daysRemaining);
 
-  for (const [key, value] of formData.entries()) {
-    if (!key) continue; // Ignora campos sin nombre
-
-    if (value === "on") {
-      // Checkbox: si aparece como "on", está tildado (true)
-      data[key] = true;
-    } else if (!data.hasOwnProperty(key)) {
-      // Si ya se seteo (por otro input deshabilitado), lo salteamos
-      data[key] = value;
+    if (roundedDaysForMessage > 0) {
+      message = `Expira en ${roundedDaysForMessage} día${
+        roundedDaysForMessage !== 1 ? "s" : ""
+      }`;
+    } else {
+      message = "Expira hoy";
     }
   }
-  return data;
+
+  return {
+    color,
+    expiresSoon: true,
+    message,
+  };
 };
 
 export const cleanObjectNullValues = (
