@@ -22,6 +22,7 @@ export default async function handler(
             fechaVencimientoParaPrisma = parsedDate;
           }
         }
+        console.log(data);
 
         const product = await prisma.productos.create({
           data: {
@@ -32,7 +33,7 @@ export default async function handler(
             precioventa: Number(data.precioventa),
             stock: Number(data.stock),
             stockminimo: Number(data.stockminimo),
-            tiendaonline: data.tiendaonline ? data.tiendaonline : 0,
+            tiendaonline: data.tiendaonline ? 1 : 0,
             categoria: Number(data.categoria),
             id: String(data.id),
             observaciones: data.observaciones ?? "",

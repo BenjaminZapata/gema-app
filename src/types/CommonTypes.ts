@@ -27,6 +27,13 @@ export interface ProductTypes {
   tiendaonline: number;
 }
 
+export interface ProductSaleDetails {
+  nombre: string;
+  productocodigo: string;
+  cantidad: number;
+  preciounitario: number;
+}
+
 //! FILTROS LISTA DE PRODUCTOS
 export interface ProductFiltersStateTypes {
   lowStock: boolean;

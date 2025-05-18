@@ -12,7 +12,6 @@ import { ProductFiltersStateTypes } from "@/types/CommonTypes";
 interface ChipProductListProps {
   activeFilters: ProductFiltersStateTypes;
   applyFilters: (filtersFromDialog: ProductFiltersStateTypes) => void;
-  resetAllFilters: () => void;
   nameInput: string;
   reloadData: () => Promise<void>;
   setNameInput: (data: string) => void;

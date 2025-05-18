@@ -13,6 +13,7 @@ export const StyledNavbar = styled(Box)(({ theme }) => ({
   top: 0,
   transition: "width 0.3s ease",
   width: theme.spacing(9),
+  zIndex: 1000,
   "&:hover .text": {
     display: "block",
     transitionDelay: "0.3s",

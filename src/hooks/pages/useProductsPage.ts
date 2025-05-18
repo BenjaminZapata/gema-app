@@ -102,21 +102,6 @@ export const useProductsPage = () => {
     setPage(value);
   }, []);
 
-  //? Función - Filtro por categorías
-  const handleCategoryFilterChange = useCallback((categoryIds: string[]) => {
-    setActiveFilters((prev) => ({ ...prev, selectedCategoryIds: categoryIds }));
-  }, []);
-
-  //? Función - Filtro por proveedores
-  const handleSupplierFilterChange = useCallback((supplierIds: string[]) => {
-    setActiveFilters((prev) => ({ ...prev, selectedSupplierIds: supplierIds }));
-  }, []);
-
-  //? Función - Filtro por stock minimo
-  const handleMinStockFilterChange = useCallback((stockFilter: boolean) => {
-    setActiveFilters((prev) => ({ ...prev, lowStock: stockFilter }));
-  }, []);
-
   //? Función - Reset de filtros
   const applyFilters = useCallback(
     (filtersFromDialog: ProductFiltersStateTypes) =>
@@ -175,10 +160,7 @@ export const useProductsPage = () => {
   return {
     activeFilters,
     applyFilters,
-    handleCategoryFilterChange,
-    handleMinStockFilterChange,
     handlePageChange,
-    handleSupplierFilterChange,
     loading,
     nameInput,
     page,

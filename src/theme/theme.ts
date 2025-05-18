@@ -33,7 +33,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           textAlign: "center",
-          padding: "8px 16px",
+          padding: "4px",
         },
       },
     },
