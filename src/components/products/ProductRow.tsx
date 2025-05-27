@@ -43,7 +43,13 @@ export const ProductRow = ({ product }: ProductRowProps) => {
 
   return (
     <>
-      <TableRow hover data-name="ProductRow">
+      <TableRow
+        hover
+        data-name="ProductRow"
+        sx={{
+          "& .MuiTableCell-root": { borderBottom: "none" },
+        }}
+      >
         <TableCell sx={{ borderLeft: "none" }}>{id}</TableCell>
         <TableCell>
           <Box alignItems={"center"} display={"flex"} gap={1}>

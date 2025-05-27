@@ -2,8 +2,7 @@ import { Box, ButtonBase, ButtonBaseProps, styled } from "@mui/material";
 
 export const StyledNavbar = styled(Box)(({ theme }) => ({
   alignItems: "center",
-  background: theme.palette.primary.light,
-  borderRight: `2px solid ${theme.palette.primary.main}`,
+  background: theme.palette.common.white,
   display: "flex",
   flexDirection: "column",
   height: "100vh",
@@ -24,6 +23,7 @@ export const StyledNavbar = styled(Box)(({ theme }) => ({
     transition: "width 0.3s ease",
   },
   "&:hover": {
+    borderRight: `1px solid ${theme.palette.others.light}`,
     width: theme.spacing(20),
   },
 }));
@@ -40,13 +40,10 @@ export const LinkButton = styled(ButtonBase, {
 })<LinkButtonTypes>(({ button, theme, pathname }) => ({
   background:
     pathname == button.link
-      ? theme.palette.primary.main
-      : theme.palette.background.default,
+      ? theme.palette.text.disabled
+      : theme.palette.common.white,
   borderRadius: theme.spacing(0.75),
-  color:
-    pathname == button.link
-      ? theme.palette.common.white
-      : theme.palette.text.primary,
+  color: theme.palette.text.primary,
   display: "flex",
   justifyContent: "flex-start",
   alignItems: "center",
@@ -55,7 +52,7 @@ export const LinkButton = styled(ButtonBase, {
   width: theme.spacing(6),
   height: theme.spacing(6),
   "&:hover": {
-    background: theme.palette.primary.dark,
+    background: theme.palette.text.secondary,
     color: theme.palette.common.white,
   },
 }));

@@ -1,5 +1,14 @@
 import { createTheme } from "@mui/material";
 
+declare module "@mui/material/styles" {
+  interface Palette {
+    others: Palette["primary"];
+  }
+  interface PaletteOptions {
+    others: PaletteOptions["primary"];
+  }
+}
+
 const theme = createTheme({
   palette: {
     common: {
@@ -23,6 +32,10 @@ const theme = createTheme({
       primary: "#050505",
       disabled: "#CCCCCC",
       secondary: "#3E3E3E",
+    },
+    others: {
+      main: "#0F4D7C",
+      light: "#00000036",
     },
   },
   typography: {

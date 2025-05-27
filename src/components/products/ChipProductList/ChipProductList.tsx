@@ -35,10 +35,11 @@ export const ChipProductList = ({
       mt={2}
       sx={(theme) => ({
         background: theme.palette.primary.contrastText,
+        border: `solid 1px ${theme.palette.others.light}`,
         borderRadius: theme.spacing(1),
+        height: theme.spacing(8),
         maxWidth: "max-content",
         padding: `${theme.spacing(0.5)} ${theme.spacing(2)}`,
-        height: theme.spacing(8),
       })}
     >
       <NameFilter nameInput={nameInput} setNameInput={setNameInput} />

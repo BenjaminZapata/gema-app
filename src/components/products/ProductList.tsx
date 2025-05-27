@@ -37,8 +37,17 @@ export const ProductList = ({
   return (
     <Box data-name="ProductsList" mt={3}>
       <Box minHeight={487}>
-        <TableContainer sx={{ margin: "auto", width: "90%" }}>
-          <Table>
+        <TableContainer
+          sx={(theme) => ({
+            background: theme.palette.common.white,
+            border: `solid 1px ${theme.palette.others.light}`,
+            borderRadius: theme.spacing(1),
+            margin: "auto",
+            padding: `${theme.spacing(0.5)} ${theme.spacing(1)}`,
+            width: "95%",
+          })}
+        >
+          <Table sx={{ borderCollapse: "separate", borderSpacing: "0 .2em" }}>
             <TableHead>
               <TableRow>
                 {columnNames.map((column) => (
