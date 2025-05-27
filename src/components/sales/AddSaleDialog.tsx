@@ -5,6 +5,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
 } from "@mui/material";
 import React from "react";
 import { ProductsList } from "./ProductsList";
@@ -50,7 +51,13 @@ export const AddSaleDialog = ({
         }}
       >
         <DialogTitle>Agregar una venta</DialogTitle>
-        <DialogContent>
+        <Divider />
+        <DialogContent
+          sx={(theme) => ({
+            paddingTop: theme.spacing(1),
+            paddingInline: theme.spacing(1),
+          })}
+        >
           <ProductsList
             handleAddProduct={handleAddProduct}
             productsList={productsList}

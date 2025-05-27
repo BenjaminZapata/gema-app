@@ -1,16 +1,15 @@
 import { useAppSelector } from "@/hooks/reduxHooks";
 import { ProductSaleDetails, ProductTypes } from "@/types/CommonTypes";
 import { DebounceClass } from "@/utils/Classes";
-import { Cancel } from "@mui/icons-material";
+import { Add, Remove } from "@mui/icons-material";
 import {
   Box,
-  CircularProgress,
   Table,
   TableBody,
   TableCell,
   TableContainer,
+  TableHead,
   TableRow,
-  TextField,
   Typography,
 } from "@mui/material";
 import React, {
@@ -20,6 +19,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
+import { ProductSelect } from "./ProductSelect";
 
 interface ProductsListTypes {
   handleAddProduct: (product: ProductTypes) => void;
@@ -59,7 +59,16 @@ export const ProductsList = ({
   }, [productFiltering]);
 
   useEffect(() => {
-    debouncer.execute(inputValue);
+    const trimmedValue = inputValue.trim();
+    if (trimmedValue.length > 0) {
+      setLoading(true);
+      debouncer.execute(inputValue);
+    } else {
+      debouncer.cancel();
+      setFilteredList([]);
+      setLoading(false);
+    }
+
     return () => {
       debouncer.cancel();
     };
@@ -68,7 +77,6 @@ export const ProductsList = ({
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    setLoading(true);
     setInputValue(e.target.value.toLowerCase());
   };
 
@@ -78,108 +86,75 @@ export const ProductsList = ({
 
   return (
     <Box display={"flex"} flexDirection={"column"} height={"100%"}>
-      <TableContainer sx={{ margin: "auto", width: "90%" }}>
+      <TableContainer sx={{ height: "65%", marginX: "auto", width: "100%" }}>
         <Table>
           {productsList.length ? (
-            productsList.map((p) => (
-              <TableRow key={`${p.productocodigo}-added`} hover>
-                <TableCell>{p.productocodigo}</TableCell>
-                <TableCell>{p.nombre}</TableCell>
-                <TableCell>x{p.cantidad}</TableCell>
-                <TableCell>${p.cantidad * p.preciounitario}</TableCell>
+            <TableHead>
+              <TableRow>
+                <TableCell>Codigo</TableCell>
+                <TableCell>Nombre</TableCell>
+                <TableCell>Cantidad</TableCell>
+                <TableCell>Precio unitario</TableCell>
               </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell sx={{ borderBottom: "none" }}>
-                <Typography width={"max-content"} margin={"auto"}>
+            </TableHead>
+          ) : null}
+          <TableBody>
+            {productsList.length ? (
+              productsList.map((p) => (
+                <TableRow key={`${p.productocodigo}-added`} hover>
+                  <TableCell>{p.productocodigo}</TableCell>
+                  <TableCell>{p.nombre}</TableCell>
+                  <TableCell>
+                    <Box
+                      alignContent={"center"}
+                      display={"flex"}
+                      gap={0.5}
+                      justifyContent={"center"}
+                    >
+                      <Remove
+                        sx={(theme) => ({
+                          fontSize: theme.spacing(2),
+                          cursor: "pointer",
+                          marginTop: theme.spacing(0.5),
+                        })}
+                      />
+                      <Typography>{p.cantidad}</Typography>
+                      <Add
+                        sx={(theme) => ({
+                          fontSize: theme.spacing(2),
+                          cursor: "pointer",
+                          marginTop: theme.spacing(0.5),
+                        })}
+                      />
+                    </Box>
+                  </TableCell>
+                  <TableCell>$ {p.cantidad * p.preciounitario}</TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell sx={{ borderBottom: "none" }}>
                   No has cargado productos todavia
-                </Typography>
-              </TableCell>
-            </TableRow>
-          )}
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
         </Table>
       </TableContainer>
-      <Box height={"35%"}>
-        <TextField
-          size="small"
-          label="Busca un producto"
-          value={inputValue}
-          sx={{ width: "100%" }}
-          onChange={handleInputChange}
-          slotProps={{
-            input: {
-              endAdornment: (
-                <Box
-                  sx={{ cursor: inputValue.length ? "pointer" : "default" }}
-                  mt={1}
-                  onClick={() => inputValue.length && clearInput()}
-                >
-                  <Cancel
-                    fontSize={"small"}
-                    sx={{ color: inputValue.length ? "black" : "gray" }}
-                  />
-                </Box>
-              ),
-            },
-          }}
-        />
-        <TableContainer>
-          <Table
-            sx={(theme) => ({
-              marginTop: theme.spacing(2),
-            })}
-          >
-            <TableBody>
-              {filteredList.length ? (
-                filteredList.slice(0, 5).map((p, index) => (
-                  <TableRow hover key={p.id}>
-                    <TableCell
-                      onClick={() => {
-                        handleAddProduct(p);
-                        clearInput();
-                      }}
-                      sx={{
-                        borderBottom:
-                          filteredList.length == index + 1 || index == 4
-                            ? "none"
-                            : "1px solid rgba(224, 224, 224, 1)",
-                        cursor: "pointer",
-                      }}
-                    >
-                      <Typography variant="body2">{p.nombre}</Typography>
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell sx={{ borderBottom: "none" }}>
-                    {loading ? (
-                      <CircularProgress
-                        size={32}
-                        sx={(theme) => ({ marginTop: theme.spacing(2) })}
-                      />
-                    ) : (
-                      <Typography
-                        variant="body2"
-                        width={"max-content"}
-                        margin={"auto"}
-                        mt={2}
-                      >
-                        {inputValue.length < 3 && inputValue.length > 0
-                          ? "Escriba al menos tres caracteres"
-                          : inputValue.length >= 3
-                          ? "No se encontraron productos con ese codigo o nombre"
-                          : "Escriba el codigo o nombre del producto"}
-                      </Typography>
-                    )}
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Box>
+      <Typography textAlign={"right"} mb={1} mr={1}>
+        Total:{" "}
+        <Typography component={"span"} fontWeight={700}>
+          $ {total}
+        </Typography>
+      </Typography>
+      <ProductSelect
+        clearInput={clearInput}
+        filteredList={filteredList}
+        handleAddProduct={handleAddProduct}
+        handleInputChange={handleInputChange}
+        inputValue={inputValue}
+        loading={loading}
+      />
     </Box>
   );
 };

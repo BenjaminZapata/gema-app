@@ -56,6 +56,16 @@ export const useSalesPage = () => {
     setProductsList([]);
   };
 
+  useEffect(() => {
+    if (productsList.length) {
+      let sum = 0;
+      productsList.forEach((p) => {
+        sum += p.cantidad * p.preciounitario;
+      });
+      setTotal(sum);
+    } else setTotal(0);
+  }, [productsList]);
+
   return {
     handleAddProduct,
     loading,
