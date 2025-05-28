@@ -8,6 +8,8 @@ import React from "react";
 export default function GastosPage() {
   const {
     handleAddProduct,
+    handleProductQuantityChange,
+    handleSaleSubmit,
     loading,
     open,
     productsList,
@@ -24,6 +26,8 @@ export default function GastosPage() {
         <>
           <ChipSalesList
             handleAddProduct={handleAddProduct}
+            handleProductQuantityChange={handleProductQuantityChange}
+            handleSaleSubmit={handleSaleSubmit}
             open={open}
             productsList={productsList}
             setOpen={setOpen}

@@ -1,7 +1,6 @@
 import { useAppSelector } from "@/hooks/reduxHooks";
-import { ProductSaleDetails, ProductTypes } from "@/types/CommonTypes";
+import { ProductSaleDetailsTypes, ProductTypes } from "@/types/CommonTypes";
 import { DebounceClass } from "@/utils/Classes";
-import { Add, Remove } from "@mui/icons-material";
 import {
   Box,
   Table,
@@ -20,15 +19,18 @@ import React, {
   useState,
 } from "react";
 import { ProductSelect } from "./ProductSelect";
+import { AddedProductRow } from "./AddedProductRow";
 
 interface ProductsListTypes {
   handleAddProduct: (product: ProductTypes) => void;
-  productsList: ProductSaleDetails[];
+  handleProductQuantityChange: (id: string, newQuantity: number) => void;
+  productsList: ProductSaleDetailsTypes[];
   total: number;
 }
 
 export const ProductsList = ({
   handleAddProduct,
+  handleProductQuantityChange,
   productsList,
   total,
 }: ProductsListTypes) => {
@@ -100,41 +102,28 @@ export const ProductsList = ({
           ) : null}
           <TableBody>
             {productsList.length ? (
-              productsList.map((p) => (
-                <TableRow key={`${p.productocodigo}-added`} hover>
-                  <TableCell>{p.productocodigo}</TableCell>
-                  <TableCell>{p.nombre}</TableCell>
-                  <TableCell>
-                    <Box
-                      alignContent={"center"}
-                      display={"flex"}
-                      gap={0.5}
-                      justifyContent={"center"}
-                    >
-                      <Remove
-                        sx={(theme) => ({
-                          fontSize: theme.spacing(2),
-                          cursor: "pointer",
-                          marginTop: theme.spacing(0.5),
-                        })}
-                      />
-                      <Typography>{p.cantidad}</Typography>
-                      <Add
-                        sx={(theme) => ({
-                          fontSize: theme.spacing(2),
-                          cursor: "pointer",
-                          marginTop: theme.spacing(0.5),
-                        })}
-                      />
-                    </Box>
-                  </TableCell>
-                  <TableCell>$ {p.cantidad * p.preciounitario}</TableCell>
-                </TableRow>
-              ))
+              productsList.map((p) => {
+                const selectedProduct = products.find(
+                  (prod) => prod.id == p.productocodigo
+                );
+                return (
+                  <AddedProductRow
+                    key={`${p.nombre}-ProductsList`}
+                    addedProduct={p}
+                    handleProductQuantityChange={handleProductQuantityChange}
+                    productData={selectedProduct}
+                  />
+                );
+              })
             ) : (
               <TableRow>
                 <TableCell sx={{ borderBottom: "none" }}>
-                  No has cargado productos todavia
+                  <Typography
+                    variant="subtitle1"
+                    sx={(theme) => ({ marginTop: theme.spacing(2) })}
+                  >
+                    No has cargado productos todavia
+                  </Typography>
                 </TableCell>
               </TableRow>
             )}

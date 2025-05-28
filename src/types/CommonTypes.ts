@@ -27,7 +27,7 @@ export interface ProductTypes {
   tiendaonline: number;
 }
 
-export interface ProductSaleDetails {
+export interface ProductSaleDetailsTypes {
   nombre: string;
   productocodigo: string;
   cantidad: number;

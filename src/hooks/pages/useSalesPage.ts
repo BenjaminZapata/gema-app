@@ -1,4 +1,4 @@
-import { ProductSaleDetails, ProductTypes } from "@/types/CommonTypes";
+import { ProductSaleDetailsTypes, ProductTypes } from "@/types/CommonTypes";
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../reduxHooks";
 import {
@@ -12,7 +12,9 @@ import { toast } from "sonner";
 export const useSalesPage = () => {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState<boolean>(true);
-  const [productsList, setProductsList] = useState<ProductSaleDetails[]>([]);
+  const [productsList, setProductsList] = useState<ProductSaleDetailsTypes[]>(
+    []
+  );
   const [total, setTotal] = useState(0);
   const { statusCategories, statusProducts, statusSuppliers } = useAppSelector(
     (state) => state.productos
@@ -35,6 +37,16 @@ export const useSalesPage = () => {
     else setLoading(false);
   }, [statusCategories, statusProducts, statusSuppliers]);
 
+  useEffect(() => {
+    if (productsList.length) {
+      let sum = 0;
+      productsList.forEach((p) => {
+        sum += p.cantidad * p.preciounitario;
+      });
+      setTotal(sum);
+    } else setTotal(0);
+  }, [productsList]);
+
   const handleAddProduct = (product: ProductTypes) => {
     if (productsList.some((p) => p.productocodigo === product.id)) {
       toast.error("Ese producto ya esta agregado");
@@ -51,28 +63,43 @@ export const useSalesPage = () => {
     ]);
   };
 
+  const handleProductQuantityChange = (id: string, newQuantity: number) => {
+    let updatedProducts = [];
+    if (newQuantity == 0) {
+      updatedProducts = productsList.filter(
+        (product) => product.productocodigo != id
+      );
+      const nombre =
+        productsList.find((p) => p.productocodigo == id)?.nombre ?? "";
+      toast.info(`Se borro ${nombre}`);
+    } else {
+      updatedProducts = productsList.map((product) =>
+        product.productocodigo === id
+          ? { ...product, cantidad: newQuantity }
+          : product
+      );
+    }
+    setProductsList(updatedProducts);
+  };
+
+  const handleSaleSubmit = () => {
+    dispatch()
+  };
+
   const resetSale = () => {
     setTotal(0);
     setProductsList([]);
   };
 
-  useEffect(() => {
-    if (productsList.length) {
-      let sum = 0;
-      productsList.forEach((p) => {
-        sum += p.cantidad * p.preciounitario;
-      });
-      setTotal(sum);
-    } else setTotal(0);
-  }, [productsList]);
-
   return {
     handleAddProduct,
+    handleProductQuantityChange,
+    handleSaleSubmit,
     loading,
     open,
     productsList,
+    resetSale,
     setOpen,
     total,
-    resetSale,
   };
 };

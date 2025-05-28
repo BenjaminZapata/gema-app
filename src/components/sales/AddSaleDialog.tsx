@@ -9,24 +9,28 @@ import {
 } from "@mui/material";
 import React from "react";
 import { ProductsList } from "./ProductsList";
-import { ProductSaleDetails, ProductTypes } from "@/types/CommonTypes";
+import { ProductSaleDetailsTypes, ProductTypes } from "@/types/CommonTypes";
 
 interface AddSaleDialogTypes {
   handleAddProduct: (product: ProductTypes) => void;
-  productsList: ProductSaleDetails[];
-  total: number;
+  handleProductQuantityChange: (id: string, newQuantity: number) => void;
+  handleSaleSubmit: () => void;
   open: boolean;
-  setOpen: (value: boolean) => void;
+  productsList: ProductSaleDetailsTypes[];
   resetSale: () => void;
+  setOpen: (value: boolean) => void;
+  total: number;
 }
 
 export const AddSaleDialog = ({
   handleAddProduct,
-  productsList,
-  total,
+  handleProductQuantityChange,
+  handleSaleSubmit,
   open,
-  setOpen,
+  productsList,
   resetSale,
+  setOpen,
+  total,
 }: AddSaleDialogTypes) => {
   const handleDialogClose = () => {
     setOpen(false);
@@ -34,7 +38,12 @@ export const AddSaleDialog = ({
 
   return (
     <>
-      <Button variant="contained" color="success" onClick={() => setOpen(true)}>
+      <Button
+        variant="contained"
+        color="success"
+        onClick={() => setOpen(true)}
+        sx={(theme) => ({ border: `1px solid ${theme.palette.common.black}` })}
+      >
         Agregar venta
       </Button>
       <Dialog
@@ -60,6 +69,7 @@ export const AddSaleDialog = ({
         >
           <ProductsList
             handleAddProduct={handleAddProduct}
+            handleProductQuantityChange={handleProductQuantityChange}
             productsList={productsList}
             total={total}
           />
@@ -86,6 +96,7 @@ export const AddSaleDialog = ({
             <Button
               color="success"
               disabled={productsList.length == 0}
+              onClick={handleSaleSubmit}
               type="submit"
               variant="contained"
             >

@@ -3,6 +3,7 @@ import { Box, ButtonBase, ButtonBaseProps, styled } from "@mui/material";
 export const StyledNavbar = styled(Box)(({ theme }) => ({
   alignItems: "center",
   background: theme.palette.common.white,
+  borderRight: `1px solid ${theme.palette.others.light}`,
   display: "flex",
   flexDirection: "column",
   height: "100vh",
@@ -23,7 +24,6 @@ export const StyledNavbar = styled(Box)(({ theme }) => ({
     transition: "width 0.3s ease",
   },
   "&:hover": {
-    borderRight: `1px solid ${theme.palette.others.light}`,
     width: theme.spacing(20),
   },
 }));
