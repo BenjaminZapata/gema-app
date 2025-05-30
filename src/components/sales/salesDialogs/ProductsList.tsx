@@ -18,8 +18,8 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { ProductSelect } from "./ProductSelect";
 import { AddedProductRow } from "./AddedProductRow";
+import { ProductSelect } from "./ProductSelect";
 
 interface ProductsListTypes {
   handleAddProduct: (product: ProductTypes) => void;

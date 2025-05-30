@@ -1,7 +1,8 @@
 // Importes de terceros
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore } from "@reduxjs/toolkit";
 // Importes propios
-import productsSlice from './slices/productsSlice';
+import productsSlice from "./slices/productsSlice";
+import paymentMethodsSlice from "./slices/paymentMethodsSlice";
 
 const store = configureStore({
   devTools: true,
@@ -11,6 +12,7 @@ const store = configureStore({
     }),
   reducer: {
     productos: productsSlice,
+    metodosdepago: paymentMethodsSlice,
   },
 });
 

@@ -6,16 +6,19 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
+  Tooltip,
+  Typography,
 } from "@mui/material";
 import React from "react";
+import { PaymentMethodsTypes, ProductSaleDetailsTypes, ProductTypes } from "@/types/CommonTypes";
 import { ProductsList } from "./ProductsList";
-import { ProductSaleDetailsTypes, ProductTypes } from "@/types/CommonTypes";
 
 interface AddSaleDialogTypes {
   handleAddProduct: (product: ProductTypes) => void;
   handleProductQuantityChange: (id: string, newQuantity: number) => void;
   handleSaleSubmit: () => void;
   open: boolean;
+  paymentMethods: Array<PaymentMethodsTypes>
   productsList: ProductSaleDetailsTypes[];
   resetSale: () => void;
   setOpen: (value: boolean) => void;
@@ -27,6 +30,7 @@ export const AddSaleDialog = ({
   handleProductQuantityChange,
   handleSaleSubmit,
   open,
+  paymentMethods,
   productsList,
   resetSale,
   setOpen,
@@ -38,14 +42,27 @@ export const AddSaleDialog = ({
 
   return (
     <>
-      <Button
-        variant="contained"
-        color="success"
-        onClick={() => setOpen(true)}
-        sx={(theme) => ({ border: `1px solid ${theme.palette.common.black}` })}
+      <Tooltip
+        disableInteractive
+        title={
+          paymentMethods?.length == 0
+            ? "No has añadido metodos de pago"
+            : null
+        }
       >
-        Agregar venta
-      </Button>
+        <Typography component={"span"}>
+          <Button
+            variant="contained"
+            color="success"
+            onClick={() => setOpen(true)}
+            sx={(theme) => ({
+              border: `1px solid ${theme.palette.common.black}`,
+            })}
+          >
+            Agregar venta
+          </Button>
+        </Typography>
+      </Tooltip>
       <Dialog
         aria-modal
         onClose={handleDialogClose}

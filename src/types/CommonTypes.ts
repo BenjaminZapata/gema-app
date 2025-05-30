@@ -27,6 +27,12 @@ export interface ProductTypes {
   tiendaonline: number;
 }
 
+export interface PaymentMethodsTypes {
+  id: string;
+  nombre: string;
+  observaciones: string;
+}
+
 export interface ProductSaleDetailsTypes {
   nombre: string;
   productocodigo: string;

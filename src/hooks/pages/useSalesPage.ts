@@ -8,10 +8,11 @@ import {
 } from "@/redux/slices/productsSlice";
 import { status } from "@/utils/Utils";
 import { toast } from "sonner";
+import { getPaymentMethods } from "@/redux/slices/paymentMethodsSlice";
 
 export const useSalesPage = () => {
-  const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [open, setOpen] = useState<boolean>(false);
   const [productsList, setProductsList] = useState<ProductSaleDetailsTypes[]>(
     []
   );
@@ -19,23 +20,28 @@ export const useSalesPage = () => {
   const { statusCategories, statusProducts, statusSuppliers } = useAppSelector(
     (state) => state.productos
   );
+  const { statusPaymentMethods, paymentMethods } = useAppSelector(
+    (state) => state.metodosdepago
+  );
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(getCategories());
     dispatch(getSuppliers());
     dispatch(getProducts());
+    dispatch(getPaymentMethods());
   }, [dispatch]);
 
   useEffect(() => {
     if (
       statusCategories === status.pending ||
       statusProducts === status.pending ||
-      statusSuppliers === status.pending
+      statusSuppliers === status.pending ||
+      statusPaymentMethods === status.pending
     )
       setLoading(true);
     else setLoading(false);
-  }, [statusCategories, statusProducts, statusSuppliers]);
+  }, [statusCategories, statusProducts, statusSuppliers, statusPaymentMethods]);
 
   useEffect(() => {
     if (productsList.length) {
@@ -83,7 +89,7 @@ export const useSalesPage = () => {
   };
 
   const handleSaleSubmit = () => {
-    dispatch()
+    // dispatch({});
   };
 
   const resetSale = () => {
@@ -97,9 +103,11 @@ export const useSalesPage = () => {
     handleSaleSubmit,
     loading,
     open,
+    paymentMethods,
     productsList,
     resetSale,
     setOpen,
+    statusPaymentMethods,
     total,
   };
 };
