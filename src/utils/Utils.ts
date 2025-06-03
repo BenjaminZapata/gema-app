@@ -15,9 +15,10 @@ export const categorySchema = z
   .string()
   .min(3, "Nombre: ingrese mas de 3 caracteres");
 
-  export const paymentMethodSchema = z
-  .string()
-  .min(3, "Nombre: ingrese mas de 3 caracteres");
+  export const paymentMethodSchema = z.object({
+    nombre: z.string().min(3, "Nombre: ingrese mas de 3 caracteres"),
+    observaciones: z.string().min(3, "Observaciones: ingrese mas de 3 caracteres").optional().default('')
+  })
 
 const baseProductSchemaFields = {
   nombre: z.string().min(3, "El nombre debe tener al menos 3 caracteres"),

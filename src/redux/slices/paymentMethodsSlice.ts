@@ -22,10 +22,11 @@ const initialState: paymentMethodsSliceTypes = {
 //* categorías
 export const addPaymentMethod = createAsyncThunk(
   "products/addPaymentMethod",
-  async (nombre: string) => {
+  async (data: { nombre: string, observaciones?: string}) => {
     try {
       const res = await axios.post(`${localURL}/api/paymentmethods`, {
-        nombre: nombre,
+        nombre: data.nombre,
+        observaciones: data.observaciones
       });
       toast.success("Se ha creado el metodo de pago");
       return res.data;

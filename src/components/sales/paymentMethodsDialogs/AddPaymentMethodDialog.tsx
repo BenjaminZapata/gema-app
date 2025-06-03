@@ -18,6 +18,7 @@ import { toast } from "sonner";
 export const AddPaymentMethodDialog = () => {
   const [open, setOpen] = useState<boolean>(false);
   const [paymentMethodName, setPaymentMethodName] = useState<string>("");
+  const [paymentMethodObservations, setPaymentMethodObservations] = useState<string>("");
   const dispatch = useAppDispatch();
 
   const handleDialogClose = () => {
@@ -51,7 +52,7 @@ export const AddPaymentMethodDialog = () => {
             const formData = new FormData(event.currentTarget);
             const formJson = Object.fromEntries(formData.entries());
             try {
-              const validation = paymentMethodSchema.parse(formJson.category);
+              const validation = paymentMethodSchema.parse(formJson);
               const sendData = async () => {
                 await dispatch(addPaymentMethod(validation));
                 await dispatch(getPaymentMethods());
@@ -70,8 +71,8 @@ export const AddPaymentMethodDialog = () => {
           <TextField
             required
             margin="dense"
-            id="category"
-            name="category"
+            id="nombre"
+            name="nombre"
             label="Nombre"
             type="text"
             fullWidth
@@ -79,6 +80,19 @@ export const AddPaymentMethodDialog = () => {
             value={paymentMethodName}
             onChange={(e) => {
               setPaymentMethodName(e.target.value);
+            }}
+          />
+          <TextField
+            margin="dense"
+            id="observaciones"
+            name="observaciones"
+            label="Observaciones"
+            type="text"
+            fullWidth
+            variant="standard"
+            value={paymentMethodObservations}
+            onChange={(e) => {
+              setPaymentMethodObservations(e.target.value);
             }}
           />
         </DialogContent>
