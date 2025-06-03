@@ -8,21 +8,25 @@ import {
   Divider,
   Tooltip,
   Typography,
-} from "@mui/material";
-import React from "react";
-import { PaymentMethodsTypes, ProductSaleDetailsTypes, ProductTypes } from "@/types/CommonTypes";
-import { ProductsList } from "./ProductsList";
+} from '@mui/material'
+import React from 'react'
+import {
+  PaymentMethodsTypes,
+  ProductSaleDetailsTypes,
+  ProductTypes,
+} from '@/types/CommonTypes'
+import { ProductsList } from './ProductsList'
 
 interface AddSaleDialogTypes {
-  handleAddProduct: (product: ProductTypes) => void;
-  handleProductQuantityChange: (id: string, newQuantity: number) => void;
-  handleSaleSubmit: () => void;
-  open: boolean;
+  handleAddProduct: (product: ProductTypes) => void
+  handleProductQuantityChange: (id: string, newQuantity: number) => void
+  handleSaleSubmit: () => void
+  open: boolean
   paymentMethods: Array<PaymentMethodsTypes>
-  productsList: ProductSaleDetailsTypes[];
-  resetSale: () => void;
-  setOpen: (value: boolean) => void;
-  total: number;
+  productsList: ProductSaleDetailsTypes[]
+  resetSale: () => void
+  setOpen: (value: boolean) => void
+  total: number
 }
 
 export const AddSaleDialog = ({
@@ -37,20 +41,18 @@ export const AddSaleDialog = ({
   total,
 }: AddSaleDialogTypes) => {
   const handleDialogClose = () => {
-    setOpen(false);
-  };
+    setOpen(false)
+  }
 
   return (
     <>
       <Tooltip
         disableInteractive
         title={
-          paymentMethods?.length == 0
-            ? "No has añadido metodos de pago"
-            : null
+          paymentMethods?.length == 0 ? 'No hay metodos de pago añadidos' : null
         }
       >
-        <Typography component={"span"}>
+        <Typography component={'span'}>
           <Button
             variant="contained"
             color="success"
@@ -69,10 +71,10 @@ export const AddSaleDialog = ({
         onClose={handleDialogClose}
         open={open}
         PaperProps={{
-          component: "form",
+          component: 'form',
           sx: (theme) => ({
-            height: "80svh",
-            width: "100vw",
+            height: '80svh',
+            width: '100vw',
             minWidth: theme.spacing(50),
           }),
         }}
@@ -95,8 +97,8 @@ export const AddSaleDialog = ({
         <DialogActions
           sx={(theme) => ({
             color: theme.palette.common.black,
-            display: "flex",
-            justifyContent: "space-between",
+            display: 'flex',
+            justifyContent: 'space-between',
           })}
         >
           <Button
@@ -124,5 +126,5 @@ export const AddSaleDialog = ({
         </DialogActions>
       </Dialog>
     </>
-  );
-};
+  )
+}

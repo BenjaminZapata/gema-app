@@ -1,4 +1,4 @@
-import { toast } from "sonner";
+import { toast } from 'sonner'
 import {
   Button,
   Dialog,
@@ -6,29 +6,30 @@ import {
   DialogContent,
   DialogTitle,
   TextField,
-} from "@mui/material";
-import { useAppDispatch } from "../../../../hooks/reduxHooks";
+} from '@mui/material'
+import { useAppDispatch } from '../../../../hooks/reduxHooks'
 import {
   addCategory,
   getCategories,
-} from "../../../../redux/slices/productsSlice";
-import { useState } from "react";
-import { categorySchema } from "../../../../utils/Utils";
+} from '../../../../redux/slices/productsSlice'
+import { useState } from 'react'
+import { categorySchema } from '../../../../utils/Utils'
+import { ZodError } from 'zod'
 
 export const AddCategoryDialog = ({
   open = false,
   setOpen,
 }: {
-  open: boolean;
-  setOpen: (data: boolean) => void;
+  open: boolean
+  setOpen: (data: boolean) => void
 }) => {
-  const [categoryName, setCategoryName] = useState("");
-  const dispatch = useAppDispatch();
+  const [categoryName, setCategoryName] = useState('')
+  const dispatch = useAppDispatch()
 
   const handleDialogClose = () => {
-    setOpen(false);
-    setCategoryName("");
-  };
+    setOpen(false)
+    setCategoryName('')
+  }
 
   return (
     <>
@@ -37,24 +38,26 @@ export const AddCategoryDialog = ({
         open={open}
         onClose={handleDialogClose}
         PaperProps={{
-          component: "form",
+          component: 'form',
           onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-            event.preventDefault();
-            const formData = new FormData(event.currentTarget);
-            const formJson = Object.fromEntries(formData.entries());
+            event.preventDefault()
+            const formData = new FormData(event.currentTarget)
+            const formJson = Object.fromEntries(formData.entries())
             try {
-              const validation = categorySchema.parse(formJson.category);
+              const validation = categorySchema.parse(formJson.category)
               const sendData = async () => {
-                await dispatch(addCategory(validation));
-                await dispatch(getCategories());
-              };
-              sendData();
-              handleDialogClose();
+                await dispatch(addCategory(validation))
+                await dispatch(getCategories())
+              }
+              sendData()
+              handleDialogClose()
             } catch (err) {
-              toast.error(err.issues[0].message);
+              if (err instanceof ZodError) {
+                toast.error(err.issues[0].message)
+              } else console.log(err)
             }
           },
-          sx: (theme) => ({ width: "40vw", minWidth: theme.spacing(50) }),
+          sx: (theme) => ({ width: '40vw', minWidth: theme.spacing(50) }),
         }}
       >
         <DialogTitle>Agregar una categoria</DialogTitle>
@@ -70,7 +73,7 @@ export const AddCategoryDialog = ({
             variant="standard"
             value={categoryName}
             onChange={(e) => {
-              setCategoryName(e.target.value);
+              setCategoryName(e.target.value)
             }}
           />
         </DialogContent>
@@ -89,5 +92,5 @@ export const AddCategoryDialog = ({
         </DialogActions>
       </Dialog>
     </>
-  );
-};
+  )
+}

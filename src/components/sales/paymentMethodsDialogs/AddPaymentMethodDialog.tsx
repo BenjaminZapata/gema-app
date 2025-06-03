@@ -1,9 +1,9 @@
-import { useAppDispatch } from "@/hooks/reduxHooks";
+import { useAppDispatch } from '@/hooks/reduxHooks'
 import {
   addPaymentMethod,
   getPaymentMethods,
-} from "@/redux/slices/paymentMethodsSlice";
-import { paymentMethodSchema } from "@/utils/Utils";
+} from '@/redux/slices/paymentMethodsSlice'
+import { paymentMethodSchema } from '@/utils/Utils'
 import {
   Button,
   Dialog,
@@ -11,59 +11,57 @@ import {
   DialogContent,
   DialogTitle,
   TextField,
-} from "@mui/material";
-import React, { useState } from "react";
-import { toast } from "sonner";
+} from '@mui/material'
+import React, { useState } from 'react'
+import { toast } from 'sonner'
+import { ZodError } from 'zod'
 
-export const AddPaymentMethodDialog = () => {
-  const [open, setOpen] = useState<boolean>(false);
-  const [paymentMethodName, setPaymentMethodName] = useState<string>("");
-  const [paymentMethodObservations, setPaymentMethodObservations] = useState<string>("");
-  const dispatch = useAppDispatch();
+interface AddPaymentMethodDialogTypes {
+  open: boolean
+  setOpen: (bool: boolean) => void
+}
+
+export const AddPaymentMethodDialog = ({
+  open,
+  setOpen,
+}: AddPaymentMethodDialogTypes) => {
+  const [paymentMethodName, setPaymentMethodName] = useState<string>('')
+  const [paymentMethodObservations, setPaymentMethodObservations] =
+    useState<string>('')
+  const dispatch = useAppDispatch()
 
   const handleDialogClose = () => {
-    setOpen(false);
-    setPaymentMethodName("");
-  };
+    setOpen(false)
+    setPaymentMethodName('')
+  }
 
   return (
     <>
-      <Button
-        variant="contained"
-        color="success"
-        sx={(theme) => ({
-          border: `1px solid ${theme.palette.common.black}`,
-          borderBottomRightRadius: theme.spacing(0),
-          borderTopRightRadius: theme.spacing(0),
-          height: theme.spacing(5),
-        })}
-        onClick={() => setOpen(true)}
-      >
-        Agregar metodo de pago
-      </Button>
       <Dialog
         aria-modal
         open={open}
         onClose={handleDialogClose}
         PaperProps={{
-          component: "form",
+          component: 'form',
           onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-            event.preventDefault();
-            const formData = new FormData(event.currentTarget);
-            const formJson = Object.fromEntries(formData.entries());
+            event.preventDefault()
+            const formData = new FormData(event.currentTarget)
+            const formJson = Object.fromEntries(formData.entries())
             try {
-              const validation = paymentMethodSchema.parse(formJson);
+              const validation = paymentMethodSchema.parse(formJson)
               const sendData = async () => {
-                await dispatch(addPaymentMethod(validation));
-                await dispatch(getPaymentMethods());
-              };
-              sendData();
-              handleDialogClose();
+                await dispatch(addPaymentMethod(validation))
+                await dispatch(getPaymentMethods())
+              }
+              sendData()
+              handleDialogClose()
             } catch (err) {
-              toast.error(err.issues[0].message);
+              if (err instanceof ZodError) {
+                toast.error(err.issues[0].message)
+              } else console.log(err)
             }
           },
-          sx: (theme) => ({ width: "40vw", minWidth: theme.spacing(50) }),
+          sx: (theme) => ({ width: '40vw', minWidth: theme.spacing(50) }),
         }}
       >
         <DialogTitle>Agregar un metodo de pago</DialogTitle>
@@ -79,7 +77,7 @@ export const AddPaymentMethodDialog = () => {
             variant="standard"
             value={paymentMethodName}
             onChange={(e) => {
-              setPaymentMethodName(e.target.value);
+              setPaymentMethodName(e.target.value)
             }}
           />
           <TextField
@@ -92,7 +90,7 @@ export const AddPaymentMethodDialog = () => {
             variant="standard"
             value={paymentMethodObservations}
             onChange={(e) => {
-              setPaymentMethodObservations(e.target.value);
+              setPaymentMethodObservations(e.target.value)
             }}
           />
         </DialogContent>
@@ -111,5 +109,5 @@ export const AddPaymentMethodDialog = () => {
         </DialogActions>
       </Dialog>
     </>
-  );
-};
+  )
+}
