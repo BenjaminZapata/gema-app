@@ -20,9 +20,8 @@ export const useSalesPage = () => {
   const { statusCategories, statusProducts, statusSuppliers } = useAppSelector(
     (state) => state.productos
   );
-  const { statusPaymentMethods, paymentMethods } = useAppSelector(
-    (state) => state.ventas
-  );
+  const { statusPaymentMethods, paymentMethods, sales, statusSales } =
+    useAppSelector((state) => state.ventas);
   const [paymentMethodSelected, setPaymentMethodSelected] = useState<
     number | undefined
   >(undefined);
@@ -124,6 +123,7 @@ export const useSalesPage = () => {
 
   return {
     handleAddProduct,
+    handlePaymentChange,
     handleProductQuantityChange,
     handleSaleSubmit,
     loading,
@@ -132,9 +132,10 @@ export const useSalesPage = () => {
     paymentMethodSelected,
     productsList,
     resetSale,
+    sales,
     setOpen,
-    handlePaymentChange,
     statusPaymentMethods,
+    statusSales,
     total,
   };
 };

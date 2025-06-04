@@ -3,14 +3,18 @@ import axios from "axios";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { toast } from "sonner";
 // Importes propios
-import { PaymentMethodsTypes } from "@/types/CommonTypes";
+import {
+  PaymentMethodsTypes,
+  SaleProductDetailsTypes,
+  SalesTypes,
+} from "@/types/CommonTypes";
 import { localURL, status } from "@/utils/Utils";
-import { SaleProductDetailsTypes, StatusTypes } from "@/utils/Commons";
+import { StatusTypes } from "@/utils/Commons";
 
 interface salesSliceTypes {
-  error: null;
+  error: null | string;
   paymentMethods: Array<PaymentMethodsTypes>;
-  sales: [];
+  sales: SalesTypes[];
   statusPaymentMethods: StatusTypes;
   statusSales: StatusTypes;
 }

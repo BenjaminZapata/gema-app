@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../../lib/prisma";
-import { SaleProductDetailsTypes } from "@/utils/Commons";
+import { SaleProductDetailsTypes } from "@/types/CommonTypes";
 
 interface SaleRequestBody {
   detalles: SaleProductDetailsTypes[];
@@ -19,6 +19,7 @@ export default async function handler(
       case "GET":
         const sales = await prisma.ventas.findMany({
           include: {
+            detalles: true,
             mediodepago: true,
           },
           orderBy: {
@@ -114,7 +115,6 @@ export default async function handler(
               throw new Error(
                 `Producto con código ${detail.productocodigo} no encontrado`
               );
-
             const newStock = currentProduct.stock - detail.cantidad;
             if (newStock < 0)
               throw new Error(
@@ -129,8 +129,10 @@ export default async function handler(
               },
             });
           });
+
           await Promise.all(saleDetailsPromises);
 
+          //^ Devolvemos la venta con los detalles de los productos incluidos
           return tx.ventas.findUnique({
             where: { id: sale.id },
             include: {

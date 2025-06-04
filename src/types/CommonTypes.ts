@@ -4,6 +4,12 @@ export interface CategoryTypes {
   nombre: string;
 }
 
+export interface ExpirationFunctionTypes {
+  color?: "error" | "warning" | "inherit";
+  expiresSoon: boolean;
+  message?: string;
+}
+
 export interface SupplierTypes {
   direccion: string;
   id?: number;
@@ -38,6 +44,21 @@ export interface ProductSaleDetailsTypes {
   productocodigo: string;
   cantidad: number;
   preciounitario: number;
+}
+
+export interface SaleProductDetailsTypes {
+  cantidad: number;
+  nombre?: string;
+  preciounitario: number;
+  productocodigo: string;
+}
+
+export interface SalesTypes {
+  fecha: string | Date;
+  id: number;
+  mediosdepago: number;
+  mediodepago: number;
+  total: number;
 }
 
 //! FILTROS LISTA DE PRODUCTOS

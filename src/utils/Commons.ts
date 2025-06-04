@@ -1,16 +1,7 @@
 // Importes de terceros
 import { ZodIssue } from "zod";
 
-export interface CategoryType {
-  id: number;
-  nombre: string;
-}
-
-export interface ExpirationFunctionType {
-  color?: "error" | "warning" | "inherit";
-  expiresSoon: boolean;
-  message?: string;
-}
+export type StatusTypes = "failed" | "idle" | "loading" | "succeded" | string;
 
 export interface InputProps {
   nombre: string;
@@ -27,16 +18,21 @@ export interface InputProps {
     | "switch";
 }
 
-export interface SaleProductDetailsTypes {
-  cantidad: number;
-  nombre?: string;
-  preciounitario: number;
-  productocodigo: string;
-}
-
-
-export type StatusTypes = "failed" | "idle" | "loading" | "succeded" | string;
-
 export interface ZodError extends Error {
   issues: ZodIssue[];
 }
+
+export const months = [
+  "Enero",
+  "Febrero",
+  "Marzo",
+  "Abril",
+  "Mayo",
+  "Junio",
+  "Julio",
+  "Agosto",
+  "Septiembre",
+  "Octubre",
+  "Noviembre",
+  "Diciembre",
+];

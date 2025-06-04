@@ -5,8 +5,7 @@ import { Box, TableCell, TableRow, Tooltip, Typography } from "@mui/material";
 import { PriorityHigh, Storefront, Warning } from "@mui/icons-material";
 // Importes propios
 import { DeleteSupplierDialog } from "./dialogs/DeleteProductDialog";
-import { ExpirationFunctionType } from "@/utils/Commons";
-import { ProductTypes } from "@/types/CommonTypes";
+import { ExpirationFunctionTypes, ProductTypes } from "@/types/CommonTypes";
 import { useAppSelector } from "@/hooks/reduxHooks";
 import {
   getDate,
@@ -24,7 +23,7 @@ export const ProductRow = ({ product }: ProductRowProps) => {
   const [deleteProductOpen, setDeleteProductOpen] = useState<boolean>(false);
   const [modifyProductOpen, setModifyProductOpen] = useState<boolean>(false);
   const { categories, suppliers } = useAppSelector((state) => state.productos);
-  const isExpired: ExpirationFunctionType = getExpirationDate(product);
+  const isExpired:  ExpirationFunctionTypes = getExpirationDate(product);
 
   const {
     categoria,

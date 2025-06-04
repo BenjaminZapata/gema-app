@@ -5,6 +5,7 @@ import { Box } from "@mui/material";
 import { PageSpinner } from "@/components/commons/PageSpinner";
 import { ChipSalesList } from "@/components/sales/ChipSalesList";
 import { useSalesPage } from "@/hooks/pages/useSalesPage";
+import { SalesDetailsList } from "@/components/sales/SalesDetailsList";
 
 export default function GastosPage() {
   const {
@@ -18,7 +19,9 @@ export default function GastosPage() {
     paymentMethodSelected,
     productsList,
     resetSale,
+    sales,
     setOpen,
+    statusSales,
     total,
   } = useSalesPage();
 
@@ -28,13 +31,7 @@ export default function GastosPage() {
         <PageSpinner />
       ) : (
         <Box display={"flex"} gap={2} mt={2}>
-          <Box
-            width={"70%"}
-            height={"80svh"}
-            sx={{
-              border: "solid 1px black",
-            }}
-          >
+          <Box width={"70%"} height={"90svh"}>
             <ChipSalesList
               handleAddProduct={handleAddProduct}
               handleProductQuantityChange={handleProductQuantityChange}
@@ -48,14 +45,9 @@ export default function GastosPage() {
               paymentMethodSelected={paymentMethodSelected}
               handlePaymentChange={handlePaymentChange}
             />
+            <SalesDetailsList sales={sales} statusSales={statusSales} />
           </Box>
-          <Box
-            width={"30%"}
-            height={"80svh"}
-            sx={{
-              border: "solid 1px black",
-            }}
-          ></Box>
+          <Box width={"30%"} height={"90svh"}></Box>
         </Box>
       )}
     </>

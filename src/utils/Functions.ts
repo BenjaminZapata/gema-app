@@ -1,7 +1,6 @@
 // Importes propios
 
-import { ProductTypes } from "@/types/CommonTypes";
-import { ExpirationFunctionType } from "./Commons";
+import { ExpirationFunctionTypes, ProductTypes } from "@/types/CommonTypes";
 
 const FOURTEEN_DAYS_IN_MS = 14 * 24 * 60 * 60 * 1000;
 const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
@@ -48,7 +47,7 @@ export const getLastModification = (date: string) => {
 
 export const getExpirationDate = (
   product: ProductTypes
-): ExpirationFunctionType => {
+): ExpirationFunctionTypes => {
   const dateObject = new Date(String(product.fechavencimiento));
   if (
     !dateObject ||
