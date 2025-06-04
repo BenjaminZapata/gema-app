@@ -53,19 +53,23 @@ export const ProductsList = ({
 
   const productFiltering = useCallback(
     (value: string) => {
-      if (value.length >= 3)
-        setFilteredList(
-          products.filter(
+      if (value.length >= 3) {
+        const filteredProducts = products
+          .filter(
             (p) =>
               (p.nombre.toLowerCase().includes(value.trim()) ||
                 p.id.includes(value.trim())) &&
               p.stock != 0
           )
-        );
-      else setFilteredList([]);
+          .filter(
+            (p) =>
+              !productsList.some((cartProd) => cartProd.productocodigo == p.id)
+          );
+        setFilteredList(filteredProducts);
+      } else setFilteredList([]);
       setLoading(false);
     },
-    [products]
+    [products, productsList, setFilteredList, setLoading]
   );
 
   const debouncer = useMemo(() => {

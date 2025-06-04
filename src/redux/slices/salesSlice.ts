@@ -96,7 +96,6 @@ export const addSale = createAsyncThunk(
         total: total,
       };
       const res = await axios.post(`${localURL}/api/sales`, apiObject);
-      toast.success("Se ha añadido la venta");
       return res.data;
     } catch {
       toast.error("ERROR: No se pudo añadir la venta");
@@ -126,13 +125,26 @@ const salesSlice = createSlice({
       state.paymentMethods = payload;
     });
     // addSale
-    builder.addCase(addSale.fulfilled, () => {
+    builder.addCase(addSale.fulfilled, (state, { payload }) => {
       getSales();
       toast.success("Venta agregada con exito");
     });
+    builder.addCase(addSale.rejected, () => {
+      getSales();
+      toast.error("Hubo un error al añadir la venta");
+    });
     // getSales
+    builder.addCase(getSales.pending, (state) => {
+      state.statusSales = status.pending;
+    });
     builder.addCase(getSales.fulfilled, (state, { payload }) => {
+      state.statusSales = status.succeded;
       state.sales = payload;
+      toast.success("Ventas obtenidas con exito");
+    });
+    builder.addCase(getSales.rejected, (state, { payload }) => {
+      state.statusSales = status.failed;
+      toast.error("Hubo un error al obtener las ventas");
     });
   },
 });

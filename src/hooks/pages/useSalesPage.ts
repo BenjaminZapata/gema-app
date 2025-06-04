@@ -27,22 +27,25 @@ export const useSalesPage = () => {
   >(undefined);
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    dispatch(getProducts());
-    dispatch(getPaymentMethods());
-    dispatch(getSales());
-  }, [dispatch]);
+  useEffect(() => reloadData(), []);
 
   useEffect(() => {
     if (
       statusCategories === status.pending ||
+      statusPaymentMethods === status.pending ||
       statusProducts === status.pending ||
-      statusSuppliers === status.pending ||
-      statusPaymentMethods === status.pending
+      statusSales === status.pending ||
+      statusSuppliers === status.pending
     )
       setLoading(true);
     else setLoading(false);
-  }, [statusCategories, statusProducts, statusSuppliers, statusPaymentMethods]);
+  }, [
+    statusCategories,
+    statusPaymentMethods,
+    statusProducts,
+    statusSales,
+    statusSuppliers,
+  ]);
 
   useEffect(() => {
     if (productsList.length) {
@@ -101,18 +104,26 @@ export const useSalesPage = () => {
       toast.error("ERROR: no se ha agregado productos o metodo de pago");
       return;
     }
-    console.log(productsList, paymentMethodSelected);
-    dispatch(
-      addSale({
-        mediosdepago: paymentMethodSelected,
-        productList: productsList,
-        total: total,
-      })
-    );
+    try {
+      dispatch(
+        addSale({
+          mediosdepago: paymentMethodSelected,
+          productList: productsList,
+          total: total,
+        })
+      );
+      reloadData();
+    } catch {}
   };
 
   const handlePaymentChange = (id: number) => {
     setPaymentMethodSelected(id);
+  };
+
+  const reloadData = () => {
+    dispatch(getProducts());
+    dispatch(getPaymentMethods());
+    dispatch(getSales());
   };
 
   const resetSale = () => {

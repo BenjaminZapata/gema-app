@@ -9,13 +9,15 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   PaymentMethodsTypes,
   ProductSaleDetailsTypes,
   ProductTypes,
 } from "@/types/CommonTypes";
 import { ProductsList } from "./ProductsList";
+import { useAppSelector } from "@/hooks/reduxHooks";
+import { toast } from "sonner";
 
 interface AddSaleDialogTypes {
   handleAddProduct: (product: ProductTypes) => void;
@@ -44,6 +46,12 @@ export const AddSaleDialog = ({
   setOpen,
   total,
 }: AddSaleDialogTypes) => {
+  const { statusSales } = useAppSelector((state) => state.ventas);
+
+  useEffect(() => {
+    if (statusSales === "succeded") setOpen(false);
+  }, [statusSales]);
+
   const handleDialogClose = () => {
     setOpen(false);
   };
