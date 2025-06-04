@@ -6,7 +6,7 @@ import React from "react";
 interface AddedProductRowTypes {
   addedProduct: ProductSaleDetailsTypes;
   handleProductQuantityChange: (id: string, newQuantity: number) => void;
-  productData: ProductTypes;
+  productData: ProductTypes | undefined;
 }
 
 export const AddedProductRow = ({
@@ -14,6 +14,8 @@ export const AddedProductRow = ({
   handleProductQuantityChange,
   productData,
 }: AddedProductRowTypes) => {
+  if (!productData) return;
+
   const { stock, id } = productData;
 
   return (

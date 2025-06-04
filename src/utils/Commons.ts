@@ -27,6 +27,14 @@ export interface InputProps {
     | "switch";
 }
 
+export interface SaleProductDetailsTypes {
+  cantidad: number;
+  nombre?: string;
+  preciounitario: number;
+  productocodigo: string;
+}
+
+
 export type StatusTypes = "failed" | "idle" | "loading" | "succeded" | string;
 
 export interface ZodError extends Error {

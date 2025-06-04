@@ -1,14 +1,14 @@
-import { ProductSaleDetailsTypes, ProductTypes } from "@/types/CommonTypes";
-import { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../reduxHooks";
 import {
-  getCategories,
-  getProducts,
-  getSuppliers,
-} from "@/redux/slices/productsSlice";
+  addSale,
+  getPaymentMethods,
+  getSales,
+} from "@/redux/slices/salesSlice";
+import { getProducts } from "@/redux/slices/productsSlice";
+import { ProductSaleDetailsTypes, ProductTypes } from "@/types/CommonTypes";
 import { status } from "@/utils/Utils";
 import { toast } from "sonner";
-import { getPaymentMethods } from "@/redux/slices/paymentMethodsSlice";
+import { useAppDispatch, useAppSelector } from "../reduxHooks";
+import { useEffect, useState } from "react";
 
 export const useSalesPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -21,15 +21,17 @@ export const useSalesPage = () => {
     (state) => state.productos
   );
   const { statusPaymentMethods, paymentMethods } = useAppSelector(
-    (state) => state.metodosdepago
+    (state) => state.ventas
   );
+  const [paymentMethodSelected, setPaymentMethodSelected] = useState<
+    number | undefined
+  >(undefined);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(getCategories());
-    dispatch(getSuppliers());
     dispatch(getProducts());
     dispatch(getPaymentMethods());
+    dispatch(getSales());
   }, [dispatch]);
 
   useEffect(() => {
@@ -52,6 +54,12 @@ export const useSalesPage = () => {
       setTotal(sum);
     } else setTotal(0);
   }, [productsList]);
+
+  useEffect(() => {
+    if (open === false) {
+      resetSale();
+    }
+  }, [open]);
 
   const handleAddProduct = (product: ProductTypes) => {
     if (productsList.some((p) => p.productocodigo === product.id)) {
@@ -88,13 +96,30 @@ export const useSalesPage = () => {
     setProductsList(updatedProducts);
   };
 
-  const handleSaleSubmit = () => {
-    // dispatch({});
+  const handleSaleSubmit = (e: React.FormEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    if (productsList.length == 0 || typeof paymentMethodSelected !== "number") {
+      toast.error("ERROR: no se ha agregado productos o metodo de pago");
+      return;
+    }
+    console.log(productsList, paymentMethodSelected);
+    dispatch(
+      addSale({
+        mediosdepago: paymentMethodSelected,
+        productList: productsList,
+        total: total,
+      })
+    );
+  };
+
+  const handlePaymentChange = (id: number) => {
+    setPaymentMethodSelected(id);
   };
 
   const resetSale = () => {
     setTotal(0);
     setProductsList([]);
+    setPaymentMethodSelected(undefined);
   };
 
   return {
@@ -104,9 +129,11 @@ export const useSalesPage = () => {
     loading,
     open,
     paymentMethods,
+    paymentMethodSelected,
     productsList,
     resetSale,
     setOpen,
+    handlePaymentChange,
     statusPaymentMethods,
     total,
   };

@@ -91,7 +91,7 @@ model ventas {
   id            Int              @id @default(autoincrement())
   mediosdepago  Int
   total         Int
-  fecha         String
+  fecha         DateTime @db.DateTime(3)
 
   mediodepago mediosdepago      @relation(fields: [mediosdepago], references: [id])
   detalles    detalledeventas[]

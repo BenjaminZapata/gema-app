@@ -1,7 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState } from "react";
 import {
   Button,
-  ButtonProps,
   Dialog,
   DialogActions,
   DialogContent,
@@ -10,43 +9,39 @@ import {
   MenuItem,
   Select,
   SelectChangeEvent,
-  styled,
-  Tooltip,
-  Typography,
-} from '@mui/material'
-import { Remove } from '@mui/icons-material'
-import { toast } from 'sonner'
-import { useAppDispatch, useAppSelector } from '@/hooks/reduxHooks'
+} from "@mui/material";
+import { toast } from "sonner";
+import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
 import {
   deletePaymentMethod,
   getPaymentMethods,
-} from '@/redux/slices/paymentMethodsSlice'
+} from "@/redux/slices/salesSlice";
 
 interface DeletePaymentMethodDialogTypes {
-  open: boolean
-  setOpen: (bool: boolean) => void
+  open: boolean;
+  setOpen: (bool: boolean) => void;
 }
 
 export const DeletePaymentMethodDialog = ({
   open,
   setOpen,
 }: DeletePaymentMethodDialogTypes) => {
-  const [selectedPayment, setSelectedPayment] = useState<string>('')
-  const { paymentMethods } = useAppSelector((state) => state.metodosdepago)
-  const dispatch = useAppDispatch()
+  const [selectedPayment, setSelectedPayment] = useState<string>("");
+  const { paymentMethods } = useAppSelector((state) => state.ventas);
+  const dispatch = useAppDispatch();
 
   const handleDialogClose = () => {
-    setSelectedPayment('')
-    setOpen(false)
-  }
+    setSelectedPayment("");
+    setOpen(false);
+  };
 
   const handleChange = (event: SelectChangeEvent) => {
-    setSelectedPayment(event.target.value)
-  }
+    setSelectedPayment(event.target.value);
+  };
 
   if (open && !paymentMethods?.length) {
-    toast.error('No hay proveedores cargados')
-    setOpen(false)
+    toast.error("No hay proveedores cargados");
+    setOpen(false);
   }
 
   return (
@@ -56,20 +51,20 @@ export const DeletePaymentMethodDialog = ({
         onClose={handleDialogClose}
         open={open}
         PaperProps={{
-          component: 'form',
+          component: "form",
           onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-            event.preventDefault()
+            event.preventDefault();
             try {
               const sendData = async () => {
-                await dispatch(deletePaymentMethod(selectedPayment))
-                await dispatch(getPaymentMethods())
-              }
-              sendData()
-              handleDialogClose()
+                await dispatch(deletePaymentMethod(selectedPayment));
+                await dispatch(getPaymentMethods());
+              };
+              sendData();
+              handleDialogClose();
             } catch (err) {
               if (err instanceof Error) {
-                toast.error(err.message)
-              } else toast.error('ERROR: No se pudo borrar el metodo de pago')
+                toast.error(err.message);
+              } else toast.error("ERROR: No se pudo borrar el metodo de pago");
             }
           },
         }}
@@ -86,7 +81,7 @@ export const DeletePaymentMethodDialog = ({
             labelId="deleteSupplierSelect"
             value={selectedPayment}
             onChange={handleChange}
-            sx={{ minWidth: '60%' }}
+            sx={{ minWidth: "60%" }}
           >
             {paymentMethods?.map((c) => (
               <MenuItem key={c.id} value={c.id}>
@@ -103,12 +98,12 @@ export const DeletePaymentMethodDialog = ({
             type="submit"
             color="error"
             variant="contained"
-            disabled={selectedPayment === ''}
+            disabled={selectedPayment === ""}
           >
             Eliminar
           </Button>
         </DialogActions>
       </Dialog>
     </>
-  )
-}
+  );
+};

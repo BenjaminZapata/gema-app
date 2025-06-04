@@ -46,9 +46,15 @@ export const ProductRow = ({ product }: ProductRowProps) => {
       <TableRow
         hover
         data-name="ProductRow"
-        sx={{
-          "& .MuiTableCell-root": { borderBottom: "none" },
-        }}
+        sx={(theme) => ({
+          "& .MuiTableCell-root": {
+            borderBottom: "none",
+            color:
+              stock == 0
+                ? theme.palette.text.disabled
+                : theme.palette.common.black,
+          },
+        })}
       >
         <TableCell sx={{ borderLeft: "none" }}>{id}</TableCell>
         <TableCell>
@@ -75,8 +81,14 @@ export const ProductRow = ({ product }: ProductRowProps) => {
                 </Tooltip>
               ) : null}
               {stockminimo >= stock ? (
-                <Tooltip disableInteractive title={"Stock bajo"}>
-                  <Warning color="warning" fontSize="small" />
+                <Tooltip
+                  disableInteractive
+                  title={stock == 0 ? "Sin stock" : "Stock bajo"}
+                >
+                  <Warning
+                    color={stock == 0 ? "error" : "warning"}
+                    fontSize="small"
+                  />
                 </Tooltip>
               ) : null}
             </Box>

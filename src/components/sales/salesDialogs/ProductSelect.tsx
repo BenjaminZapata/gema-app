@@ -38,7 +38,7 @@ export const ProductSelect = ({
         size="small"
         label="Busca un producto"
         value={inputValue}
-        sx={{ width: "100%" }}
+        sx={{ fontSize: "14px", width: "100%" }}
         onChange={handleInputChange}
         slotProps={{
           input: {
@@ -60,7 +60,7 @@ export const ProductSelect = ({
       <TableContainer>
         <Table
           sx={(theme) => ({
-            marginTop: theme.spacing(2),
+            marginTop: theme.spacing(1),
           })}
         >
           <TableBody>

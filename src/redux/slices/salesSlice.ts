@@ -5,28 +5,32 @@ import { toast } from "sonner";
 // Importes propios
 import { PaymentMethodsTypes } from "@/types/CommonTypes";
 import { localURL, status } from "@/utils/Utils";
-import { StatusTypes } from "@/utils/Commons";
+import { SaleProductDetailsTypes, StatusTypes } from "@/utils/Commons";
 
-interface paymentMethodsSliceTypes {
-  paymentMethods: Array<PaymentMethodsTypes>;
+interface salesSliceTypes {
   error: null;
+  paymentMethods: Array<PaymentMethodsTypes>;
+  sales: [];
   statusPaymentMethods: StatusTypes;
+  statusSales: StatusTypes;
 }
 
-const initialState: paymentMethodsSliceTypes = {
-  paymentMethods: [],
+const initialState: salesSliceTypes = {
   error: null,
+  paymentMethods: [],
+  sales: [],
   statusPaymentMethods: "idle",
+  statusSales: "idle",
 };
 
-//* categorías
+//* metodos de pago
 export const addPaymentMethod = createAsyncThunk(
-  "products/addPaymentMethod",
-  async (data: { nombre: string, observaciones?: string}) => {
+  "sales/addPaymentMethod",
+  async (data: { nombre: string; observaciones?: string }) => {
     try {
       const res = await axios.post(`${localURL}/api/paymentmethods`, {
         nombre: data.nombre,
-        observaciones: data.observaciones
+        observaciones: data.observaciones,
       });
       toast.success("Se ha creado el metodo de pago");
       return res.data;
@@ -37,7 +41,7 @@ export const addPaymentMethod = createAsyncThunk(
 );
 
 export const deletePaymentMethod = createAsyncThunk(
-  "products/deletePaymentMethod",
+  "sales/deletePaymentMethod",
   async (id: string) => {
     try {
       const res = await axios.delete(`${localURL}/api/paymentmethods/${id}`);
@@ -50,7 +54,7 @@ export const deletePaymentMethod = createAsyncThunk(
 );
 
 export const getPaymentMethods = createAsyncThunk(
-  "products/getPaymentMethods",
+  "sales/getPaymentMethods",
   async () => {
     try {
       const res = await axios.get(`${localURL}/api/paymentmethods`);
@@ -61,8 +65,43 @@ export const getPaymentMethods = createAsyncThunk(
   }
 );
 
-const paymentMethodsSlice = createSlice({
-  name: "paymentMethods",
+//* ventas
+export const getSales = createAsyncThunk("sales/getSales", async () => {
+  try {
+    const res = await axios.get(`${localURL}/api/sales`);
+    return res.data;
+  } catch {
+    toast.error("ERROR: No se pudo obtener las ventas");
+  }
+});
+
+export const addSale = createAsyncThunk(
+  "sales/addSale",
+  async (data: {
+    mediosdepago: number;
+    productList: SaleProductDetailsTypes[];
+    total: number;
+  }) => {
+    try {
+      const { productList, mediosdepago, total } = data;
+      productList.forEach((prod) => delete prod.nombre);
+      const apiObject = {
+        detalles: productList,
+        fecha: new Date(),
+        mediosdepago: mediosdepago,
+        total: total,
+      };
+      const res = await axios.post(`${localURL}/api/sales`, apiObject);
+      toast.success("Se ha añadido la venta");
+      return res.data;
+    } catch {
+      toast.error("ERROR: No se pudo añadir la venta");
+    }
+  }
+);
+
+const salesSlice = createSlice({
+  name: "salesSlice",
   initialState: initialState,
   reducers: {},
   extraReducers: (builder) => {
@@ -82,7 +121,16 @@ const paymentMethodsSlice = createSlice({
       state.statusPaymentMethods = status.succeded;
       state.paymentMethods = payload;
     });
+    // addSale
+    builder.addCase(addSale.fulfilled, () => {
+      getSales();
+      toast.success("Venta agregada con exito");
+    });
+    // getSales
+    builder.addCase(getSales.fulfilled, (state, { payload }) => {
+      state.sales = payload;
+    });
   },
 });
 
-export default paymentMethodsSlice.reducer;
+export default salesSlice.reducer;

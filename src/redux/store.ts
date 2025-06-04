@@ -2,7 +2,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 // Importes propios
 import productsSlice from "./slices/productsSlice";
-import paymentMethodsSlice from "./slices/paymentMethodsSlice";
+import salesSlice from "./slices/salesSlice";
 
 const store = configureStore({
   devTools: true,
@@ -12,7 +12,7 @@ const store = configureStore({
     }),
   reducer: {
     productos: productsSlice,
-    metodosdepago: paymentMethodsSlice,
+    ventas: salesSlice,
   },
 });
 

@@ -100,7 +100,7 @@ CREATE TABLE `mediosdepago` (
   `nombre` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `observaciones` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -159,7 +159,7 @@ CREATE TABLE `ventas` (
   `id` int NOT NULL AUTO_INCREMENT,
   `mediosdepago` int NOT NULL,
   `total` int NOT NULL,
-  `fecha` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `fecha` datetime(3) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `ventas_mediosdepago_fkey` (`mediosdepago`),
   CONSTRAINT `ventas_mediosdepago_fkey` FOREIGN KEY (`mediosdepago`) REFERENCES `mediosdepago` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
@@ -175,4 +175,4 @@ CREATE TABLE `ventas` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-30  0:12:16
+-- Dump completed on 2025-06-04 12:50:21

@@ -1,19 +1,21 @@
 "use client";
 
+import React from "react";
+import { Box } from "@mui/material";
 import { PageSpinner } from "@/components/commons/PageSpinner";
 import { ChipSalesList } from "@/components/sales/ChipSalesList";
 import { useSalesPage } from "@/hooks/pages/useSalesPage";
-import { Box } from "@mui/material";
-import React from "react";
 
 export default function GastosPage() {
   const {
     handleAddProduct,
+    handlePaymentChange,
     handleProductQuantityChange,
     handleSaleSubmit,
     loading,
     open,
     paymentMethods,
+    paymentMethodSelected,
     productsList,
     resetSale,
     setOpen,
@@ -43,6 +45,8 @@ export default function GastosPage() {
               setOpen={setOpen}
               total={total}
               resetSale={resetSale}
+              paymentMethodSelected={paymentMethodSelected}
+              handlePaymentChange={handlePaymentChange}
             />
           </Box>
           <Box
