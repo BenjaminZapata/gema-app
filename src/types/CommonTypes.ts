@@ -57,8 +57,17 @@ export interface SalesTypes {
   fecha: string | Date;
   id: number;
   mediosdepago: number;
-  mediodepago: number;
+  mediodepago?: number;
   total: number;
+  detalles?: Array<SaleDetailTypes>;
+}
+
+export interface SaleDetailTypes {
+  id: number;
+  ventacodigo: number;
+  productocodigo: string;
+  cantidad: number;
+  preciounitario: number;
 }
 
 //! FILTROS LISTA DE PRODUCTOS

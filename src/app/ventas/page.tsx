@@ -12,11 +12,13 @@ export default function GastosPage() {
     handleAddProduct,
     handlePaymentChange,
     handleProductQuantityChange,
+    handleSaleDelete,
     handleSaleSubmit,
     loading,
     open,
     paymentMethods,
     paymentMethodSelected,
+    products,
     productsList,
     resetSale,
     sales,
@@ -45,7 +47,13 @@ export default function GastosPage() {
               paymentMethodSelected={paymentMethodSelected}
               handlePaymentChange={handlePaymentChange}
             />
-            <SalesDetailsList sales={sales} statusSales={statusSales} />
+            <SalesDetailsList
+              paymentMethods={paymentMethods}
+              products={products}
+              sales={sales}
+              statusSales={statusSales}
+              handleSaleDelete={handleSaleDelete}
+            />
           </Box>
           <Box width={"30%"} height={"90svh"}></Box>
         </Box>

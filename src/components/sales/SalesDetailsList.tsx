@@ -1,10 +1,10 @@
-import { SalesTypes } from "@/types/CommonTypes";
-import { months, StatusTypes } from "@/utils/Commons";
-import { ExpandMore } from "@mui/icons-material";
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
+  PaymentMethodsTypes,
+  ProductTypes,
+  SalesTypes,
+} from "@/types/CommonTypes";
+import { StatusTypes } from "@/utils/Commons";
+import {
   Box,
   CircularProgress,
   Table,
@@ -15,18 +15,35 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { SaleDetailRow } from "./SaleDetailRow";
 
 interface SalesDetailsListTypes {
+  paymentMethods: PaymentMethodsTypes[];
+  products: ProductTypes[];
+  handleSaleDelete: (id: number) => void;
   sales: SalesTypes[];
   statusSales: StatusTypes;
 }
 
 export const SalesDetailsList = ({
+  paymentMethods,
+  products,
+  handleSaleDelete,
   sales,
   statusSales,
 }: SalesDetailsListTypes) => {
-  const [filteredSales, setFilteredSales] = useState(sales);
+  const [expanded, setExpanded] = React.useState<string | false>(false);
+  const [filteredSales, setFilteredSales] = useState<SalesTypes[]>(sales);
+
+  useEffect(() => {
+    setFilteredSales(sales);
+  }, [sales]);
+
+  const handleChange =
+    (panel: string) => (event: React.SyntheticEvent, newExpanded: boolean) => {
+      setExpanded(newExpanded ? panel : false);
+    };
 
   return (
     <>
@@ -41,12 +58,19 @@ export const SalesDetailsList = ({
               <TableRow>
                 <TableCell key={"date-tableHead"}>Fecha</TableCell>
                 <TableCell key={"details-tableHead"}>Detalles</TableCell>
-                <TableCell key={"actions-tableHead"}>Acciones</TableCell>
+                <TableCell
+                  key={"actions-tableHead"}
+                  sx={{
+                    width: "40px",
+                  }}
+                >
+                  X
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {sales.length == 0 ? (
-                <TableRow sx={(theme) => ({ width: "100%" })}>
+                <TableRow sx={{ width: "100%" }}>
                   <TableCell colSpan={3}>
                     <Typography variant="h5" my={4}>
                       No hay ventas agregadas
@@ -54,80 +78,20 @@ export const SalesDetailsList = ({
                   </TableCell>
                 </TableRow>
               ) : (
-                sales.map((s, index) => {
-                  const date = new Date(s.fecha);
-                  const day = date.getDate();
-                  const month = date.getMonth();
-                  const time = `${date.getHours()}:${String(
-                    date.getMinutes()
-                  ).padStart(2, "0")}:${String(date.getSeconds()).padStart(
-                    2,
-                    "0"
-                  )}`;
-
+                filteredSales.map((s, index) => {
                   return (
-                    <TableRow hover key={s.id} sx={{ width: "100%" }}>
-                      <TableCell
-                        sx={(theme) => ({
-                          alignItems: "center",
-                          borderBottom:
-                            index == sales.length - 1
-                              ? "none"
-                              : "1px solid rgba(224, 224, 224, 1)",
-                          display: "flex",
-                          flexDirection: "column",
-                          minWidth: "90px",
-                        })}
-                      >
-                        <Typography variant="h6">
-                          {day} de {months[month].slice(0, 3).toUpperCase()}
-                        </Typography>
-                        <Typography>{time}</Typography>
-                      </TableCell>
-                      <TableCell
-                        sx={(theme) => ({
-                          borderBottom:
-                            index == sales.length - 1
-                              ? "none"
-                              : "1px solid rgba(224, 224, 224, 1)",
-                        })}
-                      >
-                        <Box
-                          sx={(theme) => ({
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            paddingInline: theme.spacing(),
-                          })}
-                        >
-                          <Box width={"85%"}>
-                            <Accordion>
-                              <AccordionSummary
-                                expandIcon={<ExpandMore />}
-                                aria-controls="panel1-content"
-                                id="panel1-header"
-                              >
-                                <Typography component="span">
-                                  Productos
-                                </Typography>
-                              </AccordionSummary>
-                              <AccordionDetails>{s.detalles.forEach()}</AccordionDetails>
-                            </Accordion>
-                          </Box>
-                          <Typography>$ {s.total}</Typography>
-                        </Box>
-                      </TableCell>
-                      <TableCell
-                        sx={(theme) => ({
-                          borderBottom:
-                            index == sales.length - 1
-                              ? "none"
-                              : "1px solid rgba(224, 224, 224, 1)",
-                        })}
-                      >
-                        dasdsad
-                      </TableCell>
-                    </TableRow>
+                    <SaleDetailRow
+                      detalles={s.detalles}
+                      expanded={expanded}
+                      handleChange={handleChange}
+                      index={index}
+                      key={s.id}
+                      paymentMethods={paymentMethods}
+                      products={products}
+                      handleSaleDelete={handleSaleDelete}
+                      sale={s}
+                      sales={sales}
+                    />
                   );
                 })
               )}

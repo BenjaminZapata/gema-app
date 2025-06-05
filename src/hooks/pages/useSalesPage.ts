@@ -1,5 +1,6 @@
 import {
   addSale,
+  deleteSale,
   getPaymentMethods,
   getSales,
 } from "@/redux/slices/salesSlice";
@@ -17,9 +18,8 @@ export const useSalesPage = () => {
     []
   );
   const [total, setTotal] = useState(0);
-  const { statusCategories, statusProducts, statusSuppliers } = useAppSelector(
-    (state) => state.productos
-  );
+  const { statusCategories, statusProducts, statusSuppliers, products } =
+    useAppSelector((state) => state.productos);
   const { statusPaymentMethods, paymentMethods, sales, statusSales } =
     useAppSelector((state) => state.ventas);
   const [paymentMethodSelected, setPaymentMethodSelected] = useState<
@@ -98,6 +98,13 @@ export const useSalesPage = () => {
     setProductsList(updatedProducts);
   };
 
+  const handleSaleDelete = (id: number) => {
+    try {
+      dispatch(deleteSale(id));
+      dispatch(getSales());
+    } catch {}
+  };
+
   const handleSaleSubmit = (e: React.FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
     if (productsList.length == 0 || typeof paymentMethodSelected !== "number") {
@@ -136,11 +143,13 @@ export const useSalesPage = () => {
     handleAddProduct,
     handlePaymentChange,
     handleProductQuantityChange,
+    handleSaleDelete,
     handleSaleSubmit,
     loading,
     open,
     paymentMethods,
     paymentMethodSelected,
+    products,
     productsList,
     resetSale,
     sales,

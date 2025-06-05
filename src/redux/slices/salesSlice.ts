@@ -70,15 +70,6 @@ export const getPaymentMethods = createAsyncThunk(
 );
 
 //* ventas
-export const getSales = createAsyncThunk("sales/getSales", async () => {
-  try {
-    const res = await axios.get(`${localURL}/api/sales`);
-    return res.data;
-  } catch {
-    toast.error("ERROR: No se pudo obtener las ventas");
-  }
-});
-
 export const addSale = createAsyncThunk(
   "sales/addSale",
   async (data: {
@@ -99,6 +90,28 @@ export const addSale = createAsyncThunk(
       return res.data;
     } catch {
       toast.error("ERROR: No se pudo añadir la venta");
+    }
+  }
+);
+
+export const getSales = createAsyncThunk("sales/getSales", async () => {
+  try {
+    const res = await axios.get(`${localURL}/api/sales`);
+    return res.data;
+  } catch {
+    toast.error("ERROR: No se pudo obtener las ventas");
+  }
+});
+
+export const deleteSale = createAsyncThunk(
+  "sales/deleteSale",
+  async (id: number) => {
+    try {
+      const res = await axios.delete(`${localURL}/api/sales/${id}`);
+      toast.success("Se ha eliminado la venta");
+      return res.data;
+    } catch {
+      toast.error("ERROR: No se pudo eliminar la venta");
     }
   }
 );
@@ -125,7 +138,7 @@ const salesSlice = createSlice({
       state.paymentMethods = payload;
     });
     // addSale
-    builder.addCase(addSale.fulfilled, (state, { payload }) => {
+    builder.addCase(addSale.fulfilled, () => {
       getSales();
       toast.success("Venta agregada con exito");
     });
@@ -142,9 +155,17 @@ const salesSlice = createSlice({
       state.sales = payload;
       toast.success("Ventas obtenidas con exito");
     });
-    builder.addCase(getSales.rejected, (state, { payload }) => {
+    builder.addCase(getSales.rejected, (state) => {
       state.statusSales = status.failed;
       toast.error("Hubo un error al obtener las ventas");
+    });
+    // deleteSale
+    builder.addCase(deleteSale.pending, (state) => {
+      state.statusSales = status.pending;
+    });
+    builder.addCase(deleteSale.fulfilled, (state) => {
+      state.statusSales = status.succeded;
+      getSales();
     });
   },
 });
