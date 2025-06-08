@@ -30,7 +30,6 @@ export default async function handler(
         break;
       case "POST":
         const { detalles, fecha, mediosdepago, total } = data;
-        console.log(data);
         //^ Verificamos que la informacion haya sido enviada
         if (
           !mediosdepago ||

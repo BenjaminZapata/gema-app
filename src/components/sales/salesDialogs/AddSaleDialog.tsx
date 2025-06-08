@@ -17,7 +17,6 @@ import {
 } from "@/types/CommonTypes";
 import { ProductsList } from "./ProductsList";
 import { useAppSelector } from "@/hooks/reduxHooks";
-import { toast } from "sonner";
 
 interface AddSaleDialogTypes {
   handleAddProduct: (product: ProductTypes) => void;
@@ -50,7 +49,7 @@ export const AddSaleDialog = ({
 
   useEffect(() => {
     if (statusSales === "succeded") setOpen(false);
-  }, [statusSales]);
+  }, [statusSales, setOpen]);
 
   const handleDialogClose = () => {
     setOpen(false);

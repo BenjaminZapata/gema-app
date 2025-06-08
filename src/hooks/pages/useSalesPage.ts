@@ -105,20 +105,21 @@ export const useSalesPage = () => {
     } catch {}
   };
 
-  const handleSaleSubmit = (e: React.FormEvent<HTMLButtonElement>) => {
+  const handleSaleSubmit = async (e: React.FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
     if (productsList.length == 0 || typeof paymentMethodSelected !== "number") {
       toast.error("ERROR: no se ha agregado productos o metodo de pago");
       return;
     }
     try {
-      dispatch(
+      await dispatch(
         addSale({
           mediosdepago: paymentMethodSelected,
           productList: productsList,
           total: total,
         })
       );
+      setOpen(false);
       reloadData();
     } catch {}
   };
@@ -129,7 +130,6 @@ export const useSalesPage = () => {
 
   const reloadData = () => {
     dispatch(getProducts());
-    dispatch(getPaymentMethods());
     dispatch(getSales());
   };
 

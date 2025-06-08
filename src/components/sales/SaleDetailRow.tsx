@@ -21,6 +21,8 @@ import {
 } from "@mui/material";
 import React, { SyntheticEvent, useState } from "react";
 import { DeleteSaleDialog } from "./salesDialogs/DeleteSaleDialog";
+import { SaleProductsListDialog } from "./salesDialogs/SaleProductsListDialog";
+import { SaleProductDetail } from "./SaleProductDetail";
 
 const SaleDeleteButton = styled(Button)<ButtonProps>(({ theme }) => ({
   border: `1px solid ${theme.palette.common.black}`,
@@ -142,42 +144,31 @@ export const SaleDetailRow = ({
                   })}
                 >
                   <Typography component="span" fontSize={"12px"}>
-                    Productos - #{id}
+                    {detalles?.length} productos
                   </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                  {detalles?.map((d) => {
+                  {detalles?.slice(0, 5).map((d, index) => {
                     const productData = products.find(
                       (p) => p.id == d.productocodigo
                     );
                     if (!productData) return;
                     const { nombre } = productData;
 
+                    if (index + 1 == 5) {
+                      return (
+                        <SaleProductsListDialog
+                          details={detalles}
+                          key={"seeAllProducts"}
+                          products={products}
+                          saleId={id}
+                        />
+                      );
+                    }
+
                     return (
-                      <Box
-                        key={`${id}-${d.id}`}
-                        sx={(theme) => ({
-                          display: "flex",
-                          justifyContent: "space-between",
-                          "&:hover": {
-                            color: theme.palette.error.dark,
-                          },
-                        })}
-                      >
-                        <Box
-                          sx={(theme) => ({
-                            display: "flex",
-                            gap: theme.spacing(1),
-                          })}
-                        >
-                          <Typography fontSize={"13px"}>{nombre}</Typography>
-                          <Typography fontSize={"13px"}>
-                            x{d.cantidad}
-                          </Typography>
-                        </Box>
-                        <Typography fontSize={"13px"}>
-                          ${d.preciounitario} c/u
-                        </Typography>
+                      <Box key={`${id}-${d.id}`}>
+                        <SaleProductDetail detail={d} name={nombre} />
                       </Box>
                     );
                   })}
