@@ -27,7 +27,10 @@ export const useSalesPage = () => {
   >(undefined);
   const dispatch = useAppDispatch();
 
-  useEffect(() => reloadData(), []);
+  useEffect(() => {
+    dispatch(getPaymentMethods());
+    reloadData();
+  }, []);
 
   useEffect(() => {
     if (

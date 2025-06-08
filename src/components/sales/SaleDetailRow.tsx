@@ -120,7 +120,7 @@ export const SaleDetailRow = ({
               paddingInline: theme.spacing(),
             })}
           >
-            <Box width={"85%"}>
+            <Box width={"75%"}>
               <Accordion
                 expanded={expanded === `panel${index}`}
                 onChange={handleChange(`panel${index}`)}
@@ -175,7 +175,7 @@ export const SaleDetailRow = ({
                 </AccordionDetails>
               </Accordion>
             </Box>
-            <Box>
+            <Box width={"25%"}>
               <Typography fontSize={"15px"}>
                 $
                 <Typography
