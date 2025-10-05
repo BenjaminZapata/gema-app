@@ -2,7 +2,11 @@
 import { useState } from "react";
 // Importes de teceros
 import { Box, TableCell, TableRow, Tooltip, Typography } from "@mui/material";
-import { PriorityHigh, Storefront, Warning } from "@mui/icons-material";
+import {
+  AutoDelete,
+  Storefront,
+  ProductionQuantityLimits,
+} from "@mui/icons-material";
 // Importes propios
 import { DeleteSupplierDialog } from "./dialogs/DeleteProductDialog";
 import { ExpirationFunctionTypes, ProductTypes } from "@/types/CommonTypes";
@@ -23,7 +27,7 @@ export const ProductRow = ({ product }: ProductRowProps) => {
   const [deleteProductOpen, setDeleteProductOpen] = useState<boolean>(false);
   const [modifyProductOpen, setModifyProductOpen] = useState<boolean>(false);
   const { categories, suppliers } = useAppSelector((state) => state.productos);
-  const isExpired:  ExpirationFunctionTypes = getExpirationDate(product);
+  const isExpired: ExpirationFunctionTypes = getExpirationDate(product);
 
   const {
     categoria,
@@ -74,20 +78,20 @@ export const ProductRow = ({ product }: ProductRowProps) => {
                   <Storefront fontSize="small" color="success" />
                 </Tooltip>
               ) : null}
-              {fechavencimiento && isExpired.expiresSoon ? (
-                <Tooltip disableInteractive title={isExpired.message}>
-                  <PriorityHigh fontSize="small" color={isExpired.color} />
-                </Tooltip>
-              ) : null}
               {stockminimo >= stock ? (
                 <Tooltip
                   disableInteractive
                   title={stock == 0 ? "Sin stock" : "Stock bajo"}
                 >
-                  <Warning
+                  <ProductionQuantityLimits
                     color={stock == 0 ? "error" : "warning"}
                     fontSize="small"
                   />
+                </Tooltip>
+              ) : null}
+              {fechavencimiento && isExpired.expiresSoon ? (
+                <Tooltip disableInteractive title={isExpired.message}>
+                  <AutoDelete fontSize="small" color={isExpired.color} />
                 </Tooltip>
               ) : null}
             </Box>

@@ -78,3 +78,9 @@ export interface ProductFiltersStateTypes {
   selectedCategoryIds: string[];
   selectedSupplierIds: string[];
 }
+
+export interface PieChartDataTypes {
+  id: number;
+  label: string;
+  value: number;
+}

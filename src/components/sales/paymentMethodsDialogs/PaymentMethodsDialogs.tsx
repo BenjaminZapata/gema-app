@@ -63,7 +63,7 @@ export const PaymentMethodsDialogs = ({
         <Tooltip
           disableInteractive
           title={
-            paymentMethods.length === 0
+            paymentMethods?.length === 0
               ? 'No hay metodos de pago añadidos'
               : null
           }

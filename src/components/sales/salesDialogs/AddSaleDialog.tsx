@@ -68,7 +68,7 @@ export const AddSaleDialog = ({
             variant="contained"
             color="success"
             onClick={() => setOpen(true)}
-            disabled={paymentMethods.length == 0}
+            disabled={paymentMethods?.length == 0}
             sx={(theme) => ({
               border: `1px solid ${theme.palette.common.black}`,
             })}

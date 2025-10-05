@@ -1,11 +1,18 @@
 "use client";
 
 import React from "react";
-import { Box } from "@mui/material";
+import {
+  Box,
+  Divider,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import { PageSpinner } from "@/components/commons/PageSpinner";
 import { ChipSalesList } from "@/components/sales/ChipSalesList";
 import { useSalesPage } from "@/hooks/pages/useSalesPage";
 import { SalesDetailsList } from "@/components/sales/SalesDetailsList";
+import { PieChartComponent } from "@/components/commons/PieChart";
 
 export default function GastosPage() {
   const {
@@ -14,11 +21,15 @@ export default function GastosPage() {
     handleProductQuantityChange,
     handleSaleDelete,
     handleSaleSubmit,
+    isClient,
     loading,
     open,
+    paymentMethodChartData,
     paymentMethods,
     paymentMethodSelected,
+    productCategoryChartData,
     products,
+    productsChartData,
     productsList,
     resetSale,
     sales,
@@ -27,13 +38,16 @@ export default function GastosPage() {
     total,
   } = useSalesPage();
 
+  const theme = useTheme();
+  const upLg = useMediaQuery(theme.breakpoints.up("lg"));
+
   return (
     <>
       {loading ? (
         <PageSpinner />
       ) : (
-        <Box display={"flex"} gap={2} mt={2}>
-          <Box width={"70%"} height={"90svh"}>
+        <Box display={"flex"} justifyContent={"space-between"} mt={2}>
+          <Box width={{ sm: "55%", lg: "65%" }} height={"90svh"}>
             <ChipSalesList
               handleAddProduct={handleAddProduct}
               handleProductQuantityChange={handleProductQuantityChange}
@@ -55,7 +69,52 @@ export default function GastosPage() {
               handleSaleDelete={handleSaleDelete}
             />
           </Box>
-          <Box width={"30%"} height={"90svh"}></Box>
+          <Box width={{ sm: "40%", lg: "30%" }} height={"90svh"}>
+            {isClient ? (
+              <Box
+                display={"flex"}
+                justifyContent={"flex-start"}
+                flexDirection={"column"}
+                gap={2}
+              >
+                <Typography variant="h4">Resumen</Typography>
+                <Divider sx={{ width: "90%" }} />
+                <Typography variant="h6" fontWeight={300}>
+                  Ventas por metodo de pago
+                </Typography>
+                <PieChartComponent
+                  data={
+                    paymentMethodChartData.length > 8
+                      ? paymentMethodChartData.slice(0, 8)
+                      : paymentMethodChartData
+                  }
+                  width={upLg ? 200 : 100}
+                />
+                <Typography variant="h6" fontWeight={300}>
+                  Ventas por categoria de producto
+                </Typography>
+                <PieChartComponent
+                  data={
+                    productCategoryChartData.length > 8
+                      ? productCategoryChartData.slice(0, 8)
+                      : productCategoryChartData
+                  }
+                  width={upLg ? 200 : 100}
+                />
+                <Typography variant="h6" fontWeight={300}>
+                  Ventas por producto (más vendidos)
+                </Typography>
+                <PieChartComponent
+                  data={
+                    productsChartData.length > 8
+                      ? productsChartData.slice(0, 8)
+                      : productsChartData
+                  }
+                  width={upLg ? 225 : 100}
+                />
+              </Box>
+            ) : null}
+          </Box>
         </Box>
       )}
     </>
