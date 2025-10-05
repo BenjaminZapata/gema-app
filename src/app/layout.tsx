@@ -6,6 +6,7 @@ import { PageLayout } from "@/components/commons/PageLayout";
 import { Providers } from "@/redux/Providers";
 import { DateProvider } from "@/components/commons/DateProvider";
 import { Toaster } from "sonner";
+import { SalesDataProvider } from "./ventas/SalesContext";
 
 export const metadata: Metadata = {
   title: "Libreria Gema",
@@ -27,13 +28,15 @@ export default function RootLayout({
     <DateProvider>
       <Providers>
         <html lang="en" className={roboto.variable}>
-          <body>
-            <main>
-              <ThemeRegistry>
-                <PageLayout>{children}</PageLayout>
-              </ThemeRegistry>
-            </main>
-          </body>
+          <SalesDataProvider>
+            <body>
+              <main>
+                <ThemeRegistry>
+                  <PageLayout>{children}</PageLayout>
+                </ThemeRegistry>
+              </main>
+            </body>
+          </SalesDataProvider>
         </html>
         <Toaster richColors position="bottom-right" expand />
       </Providers>

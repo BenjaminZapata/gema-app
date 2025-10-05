@@ -14,6 +14,7 @@ import { status } from "@/utils/Utils";
 import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "../reduxHooks";
 import { useEffect, useState } from "react";
+import { useSalesData } from "@/app/ventas/SalesContext";
 
 /**
  * Hook personalizado para manejar la lógica de la página de ventas.
@@ -30,6 +31,12 @@ export const useSalesPage = () => {
     setIsClient(true);
   }, []);
 
+  const {
+    paymentMethodChartData: paymentMethodData,
+    productCategoryChartData: productCategoryData,
+    productsChartData: productsData,
+  } = useSalesData();
+
   // Estado para controlar la visibilidad del indicador de carga.
   const [loading, setLoading] = useState<boolean>(false);
   // Estado para controlar la visibilidad del modal de "Añadir Venta".
@@ -41,26 +48,18 @@ export const useSalesPage = () => {
   // Estado para el total monetario de la venta actual.
   const [total, setTotal] = useState(0);
   // Estado para almacenar los datos procesados para el gráfico de torta de métodos de pago.
-  const [paymentMethodChartData, setPaymentMethodChartData] = useState<
-    Array<PieChartDataTypes>
-  >([]);
+  const [paymentMethodChartData, setPaymentMethodChartData] =
+    useState<Array<PieChartDataTypes>>(paymentMethodData);
   // Estado para almacenar los datos procesados para el gráfico de torta de ventas por categoría de producto.
-  const [productCategoryChartData, setProductCategoryChartData] = useState<
-    Array<PieChartDataTypes>
-  >([]);
+  const [productCategoryChartData, setProductCategoryChartData] =
+    useState<Array<PieChartDataTypes>>(productCategoryData);
   // Estado para almacenar los datos procesados para el gráfico de torta de ventas por producto (más vendidos).
-  const [productsChartData, setProductsChartData] = useState<
-    Array<PieChartDataTypes>
-  >([]);
+  const [productsChartData, setProductsChartData] =
+    useState<Array<PieChartDataTypes>>(productsData);
 
   // Selección de datos del estado de Redux para productos, categorías y proveedores.
-  const {
-    categories,
-    products,
-    statusCategories,
-    statusProducts,
-    statusSuppliers,
-  } = useAppSelector((state) => state.productos);
+  const { products, statusCategories, statusProducts, statusSuppliers } =
+    useAppSelector((state) => state.productos);
   // Selección de datos del estado de Redux para ventas y métodos de pago.
   const { statusPaymentMethods, paymentMethods, sales, statusSales } =
     useAppSelector((state) => state.ventas);
@@ -116,20 +115,14 @@ export const useSalesPage = () => {
     }
   }, [open]);
 
-  // Efecto para procesar y actualizar los datos de los gráficos cuando las ventas o los métodos de pago cambian.
+  // Efecto para actualizar los datos de los gráficos cuando los datos del contexto cambian.
   useEffect(() => {
-    if (sales.length && paymentMethods.length) {
-      const data = processDataByPaymentMethod();
-      setPaymentMethodChartData(data);
-      if (products.length) {
-        const dataByProduct = processDataByProducts();
-        setProductsChartData(dataByProduct);
-        const dataByCategory = processDataByProductCategory();
-        setProductCategoryChartData(dataByCategory);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sales, paymentMethods]);
+    if (paymentMethodData.length > 0)
+      setPaymentMethodChartData(paymentMethodData);
+    if (productCategoryData.length > 0)
+      setProductCategoryChartData(productCategoryData);
+    if (productsData.length > 0) setProductsChartData(productsData);
+  }, [paymentMethodData, productCategoryData, productsData]);
 
   /**
    * Añade un producto a la lista de la venta actual.
@@ -236,117 +229,6 @@ export const useSalesPage = () => {
     setTotal(0);
     setProductsList([]);
     setPaymentMethodSelected(undefined);
-  };
-
-  /**
-   * Procesa los datos de ventas para agruparlos por método de pago.
-   * @returns {Array<PieChartDataTypes>} Un array de objetos formateados para el gráfico de torta.
-   */
-  const processDataByPaymentMethod = () => {
-    if (sales.length === 0 || paymentMethods.length === 0) return [];
-    const data = paymentMethods.map((method) => {
-      const salesByMethod = sales.filter(
-        (sale) => sale.mediosdepago == Number(method.id)
-      );
-      const totalByMethod = salesByMethod.reduce(
-        (acc, sale) => acc + sale.total,
-        0
-      );
-      return {
-        id: Number(method.id),
-        label: method.nombre,
-        value: totalByMethod,
-      };
-    });
-    return data;
-  };
-
-  /**
-   * Procesa los datos de ventas para agruparlos por categoría de producto.
-   * @returns {Array<PieChartDataTypes>} Un array de objetos formateados para el gráfico de torta,
-   * o un array vacío si no hay productos o categorías.
-   */
-  const processDataByProductCategory = () => {
-    if (products.length === 0 || categories.length === 0 || sales.length === 0)
-      return [];
-    const categoriesArray = Array.from(
-      new Set(products.map((product) => product.categoria))
-    );
-    const data = categoriesArray.map((category) => {
-      const productsInCategory = products.filter(
-        (product) => product.categoria === category
-      );
-      const salesInCategory = sales.filter((sale) =>
-        sale.detalles?.some((detail) =>
-          productsInCategory.some(
-            (product) => product.id === detail.productocodigo
-          )
-        )
-      );
-      const totalByCategory = salesInCategory.reduce(
-        (acc, sale) => acc + sale.total,
-        0
-      );
-      return {
-        id: category,
-        label:
-          categories.find((cat) => cat.id === category)?.nombre ||
-          String(category),
-        value: totalByCategory,
-      };
-    });
-    return data;
-  };
-
-  // funcion para generar data de grafico por producto mas vendido
-  const processDataByProducts = () => {
-    if (products.length === 0 || sales.length === 0) return [];
-    const productIds = Array.from(
-      new Set(products.map((product) => product.id))
-    );
-    const data = productIds.map((productId) => {
-      const salesWithProduct = sales.filter((sale) =>
-        sale.detalles?.some((detail) => detail.productocodigo === productId)
-      );
-      const totalUnitsSold = salesWithProduct.reduce((acc, sale) => {
-        const productDetails = sale.detalles?.filter(
-          (detail) => detail.productocodigo === productId
-        );
-        const productUnits = productDetails?.reduce(
-          (sum, detail) => sum + detail.cantidad,
-          0
-        );
-        return acc + (productUnits || 0);
-      }, 0);
-
-      const totalByProduct = salesWithProduct.reduce((acc, sale) => {
-        const productDetails = sale.detalles?.filter(
-          (detail) => detail.productocodigo === productId
-        );
-        const productTotal = productDetails?.reduce(
-          (sum, detail) => sum + detail.cantidad * detail.preciounitario,
-          0
-        );
-        return acc + (productTotal || 0);
-      }, 0);
-
-      const productName = products.find(
-        (product: ProductTypes) => product.id === productId
-      )?.nombre;
-
-      return {
-        id: Number(productId),
-        label: productName
-          ? `${
-              productName && productName.length > 30
-                ? productName?.substring(0, 27) + "..."
-                : productName
-            } (${totalUnitsSold})`
-          : String(productId),
-        value: totalByProduct,
-      };
-    });
-    return data;
   };
 
   return {

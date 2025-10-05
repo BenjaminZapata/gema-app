@@ -8,13 +8,13 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { PageSpinner } from "@/components/commons/PageSpinner";
 import { ChipSalesList } from "@/components/sales/ChipSalesList";
-import { useSalesPage } from "@/hooks/pages/useSalesPage";
-import { SalesDetailsList } from "@/components/sales/SalesDetailsList";
+import { PageSpinner } from "@/components/commons/PageSpinner";
 import { PieChartComponent } from "@/components/commons/PieChart";
+import { SalesDetailsList } from "@/components/sales/SalesDetailsList";
+import { useSalesPage } from "@/hooks/pages/useSalesPage";
 
-export default function GastosPage() {
+export const SalesPage = () => {
   const {
     handleAddProduct,
     handlePaymentChange,
@@ -119,4 +119,4 @@ export default function GastosPage() {
       )}
     </>
   );
-}
+};
