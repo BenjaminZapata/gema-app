@@ -14,7 +14,7 @@ import { PieChartComponent } from "@/components/commons/PieChart";
 import { SalesDetailsList } from "@/components/sales/SalesDetailsList";
 import { useSalesPage } from "@/hooks/pages/useSalesPage";
 
-export const SalesPage = () => {
+export default function SalesPage() {
   const {
     handleAddProduct,
     handlePaymentChange,
@@ -88,7 +88,7 @@ export const SalesPage = () => {
                       ? paymentMethodChartData.slice(0, 8)
                       : paymentMethodChartData
                   }
-                  width={upLg ? 200 : 100}
+                  width={upLg ? 225 : 100}
                 />
                 <Typography variant="h6" fontWeight={300}>
                   Ventas por categoria de producto
@@ -99,7 +99,7 @@ export const SalesPage = () => {
                       ? productCategoryChartData.slice(0, 8)
                       : productCategoryChartData
                   }
-                  width={upLg ? 200 : 100}
+                  width={upLg ? 225 : 100}
                 />
                 <Typography variant="h6" fontWeight={300}>
                   Ventas por producto (más vendidos)
@@ -119,4 +119,4 @@ export const SalesPage = () => {
       )}
     </>
   );
-};
+}

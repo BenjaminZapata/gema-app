@@ -181,7 +181,7 @@ export const SalesDataProvider = ({
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sales, paymentMethods]);
+  }, [sales, paymentMethods, products, categories]);
 
   // Memoriza el valor del contexto para evitar renders innecesarios.
   const contextValue = useMemo(

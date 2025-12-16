@@ -58,7 +58,8 @@ export const useProductsPage = () => {
       }
     };
     fetchData();
-  }, [dispatch]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // useEffect - Carga de productos en state cada vez que esta se actualiza (dispatch)
   useEffect(() => {
