@@ -10,7 +10,7 @@ import {
 } from "../../redux/slices/productsSlice";
 import { ProductFiltersStateTypes, ProductTypes } from "@/types/CommonTypes";
 import { useAppDispatch, useAppSelector } from "../reduxHooks";
-import { status } from "@/utils/Utils";
+import { matchProductByTerms, status } from "@/utils/Utils";
 
 const initialFiltersState: ProductFiltersStateTypes = {
   lowStock: false,
@@ -58,7 +58,7 @@ export const useProductsPage = () => {
       }
     };
     fetchData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // useEffect - Carga de productos en state cada vez que esta se actualiza (dispatch)
@@ -119,12 +119,9 @@ export const useProductsPage = () => {
 
     let filtered = [...productsDataFromStore];
     //* Por nombre
-    if (activeFilters.name?.trim()) {
-      const lowercasedInput = activeFilters.name.toLowerCase();
-      filtered = filtered.filter(
-        (p) =>
-          p.nombre.toLowerCase().includes(lowercasedInput) ||
-          String(p.id).includes(lowercasedInput)
+    if (activeFilters.name && activeFilters.name?.trim().length > 0) {
+      filtered = filtered.filter((p) =>
+        matchProductByTerms(p, activeFilters.name?.trim() as string)
       );
     }
 
@@ -142,18 +139,21 @@ export const useProductsPage = () => {
       filtered = filtered.filter((p) => p.stock <= p.stockminimo);
     }
 
-    //* Por precio
-    const priceFilter = activeFilters.price;
-    if (priceFilter) {
-      if (typeof priceFilter.min === "number") {
-        const minPrice = priceFilter.min;
-        filtered = filtered.filter((p) => p.precioventa >= minPrice);
-      }
-      if (typeof priceFilter.max === "number") {
-        const maxPrice = priceFilter.max;
-        filtered = filtered.filter((p) => p.precioventa <= maxPrice);
-      }
-    }
+    // //* Por precio
+    // const priceFilter = activeFilters.price;
+    // if (priceFilter) {
+    //   if (typeof priceFilter.min === "number") {
+    //     const minPrice = priceFilter.min;
+    //     filtered = filtered.filter((p) => p.precioventa >= minPrice);
+    //   }
+    //   if (typeof priceFilter.max === "number") {
+    //     const maxPrice = priceFilter.max;
+    //     filtered = filtered.filter((p) => p.precioventa <= maxPrice);
+    //   }
+    // }
+
+    //* Por ultima actualización
+
 
     setProductList(filtered);
   }, [activeFilters, productsDataFromStore]);

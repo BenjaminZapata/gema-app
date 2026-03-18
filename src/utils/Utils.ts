@@ -15,10 +15,14 @@ export const categorySchema = z
   .string()
   .min(3, "Nombre: ingrese mas de 3 caracteres");
 
-  export const paymentMethodSchema = z.object({
-    nombre: z.string().min(3, "Nombre: ingrese mas de 3 caracteres"),
-    observaciones: z.string().min(3, "Observaciones: ingrese mas de 3 caracteres").optional().default('')
-  })
+export const paymentMethodSchema = z.object({
+  nombre: z.string().min(3, "Nombre: ingrese mas de 3 caracteres"),
+  observaciones: z
+    .string()
+    .min(3, "Observaciones: ingrese mas de 3 caracteres")
+    .optional()
+    .default(""),
+});
 
 const baseProductSchemaFields = {
   nombre: z.string().min(3, "El nombre debe tener al menos 3 caracteres"),
@@ -250,18 +254,18 @@ export const addSupplierInputs: Array<InputTypes> = [
 ];
 
 export const filterDialogInputs: Array<InputTypes> = [
-  {
-    label: "Precio mínimo",
-    nombre: "price.min",
-    required: false,
-    type: "number",
-  },
-  {
-    label: "Precio máximo",
-    nombre: "price.max",
-    required: false,
-    type: "number",
-  },
+  // {
+  //   label: "Precio mínimo",
+  //   nombre: "price.min",
+  //   required: false,
+  //   type: "number",
+  // },
+  // {
+  //   label: "Precio máximo",
+  //   nombre: "price.max",
+  //   required: false,
+  //   type: "number",
+  // },
   {
     label: "Con poco stock",
     nombre: "lowStock",
@@ -269,9 +273,43 @@ export const filterDialogInputs: Array<InputTypes> = [
     type: "checkbox",
   },
   {
-    label: "categorías",
+    label: "Categorías",
     nombre: "selectedCategoryIds",
     required: false,
     type: "multiselect_categories",
   },
+  {
+    label: "Ult. actualización",
+    nombre: "lastUpdated",
+    required: false,
+    type: "select",
+  },
 ];
+
+/**
+ * Comprueba si un producto coincide con los términos de búsqueda (por palabras clave).
+ * Ignora acentos y permite orden aleatorio de las palabras.
+ */
+export const matchProductByTerms = (
+  product: { nombre: string; id: string | number },
+  searchValue: string
+): boolean => {
+  const term = searchValue
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+
+  if (!term) return true;
+
+  const searchWords = term.split(/\s+/);
+
+  // Normalizamos los datos del producto una sola vez
+  const productData = `${product.nombre} ${product.id}`
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+
+  // Retorna true solo si TODAS las palabras de búsqueda están en el producto
+  return searchWords.every((word) => productData.includes(word));
+};

@@ -26,6 +26,7 @@ import React, {
 } from "react";
 import { AddedProductRow } from "./AddedProductRow";
 import { ProductSelect } from "./ProductSelect";
+import { matchProductByTerms } from "@/utils/Utils";
 
 interface ProductsListTypes {
   handleAddProduct: (product: ProductTypes) => void;
@@ -53,23 +54,22 @@ export const ProductsList = ({
 
   const productFiltering = useCallback(
     (value: string) => {
-      if (value.length >= 3) {
-        const filteredProducts = products
-          .filter(
-            (p) =>
-              (p.nombre.toLowerCase().includes(value.trim()) ||
-                p.id.includes(value.trim())) &&
-              p.stock != 0
-          )
-          .filter(
-            (p) =>
-              !productsList.some((cartProd) => cartProd.productocodigo == p.id)
-          );
-        setFilteredList(filteredProducts);
-      } else setFilteredList([]);
+      if (value.trim().length >= 3) {
+        const existingIds = new Set(productsList.map((p) => p.productocodigo));
+
+        const filtered = products.filter((p) => {
+          const baseValidation = p.stock !== 0 && !existingIds.has(p.id);
+          // Llamamos a la función centralizada
+          return baseValidation && matchProductByTerms(p, value);
+        });
+
+        setFilteredList(filtered);
+      } else {
+        setFilteredList([]);
+      }
       setLoading(false);
     },
-    [products, productsList, setFilteredList, setLoading]
+    [products, productsList]
   );
 
   const debouncer = useMemo(() => {

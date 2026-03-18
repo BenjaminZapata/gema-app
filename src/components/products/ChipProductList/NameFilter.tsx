@@ -27,22 +27,20 @@ export const NameFilter = React.memo(
           type="text"
           onChange={handleChange}
           value={nameInput}
-          slotProps={{
-            input: {
-              endAdornment: (
-                <IconButton
-                  disabled={!nameInput}
-                  onClick={() => (nameInput ? handleClear() : null)}
-                  edge="end"
-                  sx={{
-                    cursor: nameInput ? "pointer" : "default",
-                    color: nameInput.length ? "black" : "grey",
-                  }}
-                >
-                  <Cancel fontSize="small" />
-                </IconButton>
-              ),
-            },
+          InputProps={{
+            endAdornment: (
+              <IconButton
+                disabled={!nameInput}
+                onClick={() => (nameInput ? handleClear() : null)}
+                edge="end"
+                sx={{
+                  cursor: nameInput ? "pointer" : "default",
+                  color: nameInput.length ? "black" : "grey",
+                }}
+              >
+                <Cancel fontSize="small" />
+              </IconButton>
+            ),
           }}
         />
       </Box>
