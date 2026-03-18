@@ -77,6 +77,7 @@ export interface ProductFiltersStateTypes {
   price: { min?: number; max?: number };
   selectedCategoryIds: string[];
   selectedSupplierIds: string[];
+  lastUpdated: "none" | "mas-antiguos" | "mas-recientes";
 }
 
 export interface PieChartDataTypes {

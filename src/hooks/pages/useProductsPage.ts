@@ -18,6 +18,7 @@ const initialFiltersState: ProductFiltersStateTypes = {
   price: { min: undefined, max: undefined },
   selectedCategoryIds: [],
   selectedSupplierIds: [],
+  lastUpdated: "none",
 };
 
 export const useProductsPage = () => {
@@ -153,7 +154,25 @@ export const useProductsPage = () => {
     // }
 
     //* Por ultima actualización
+    if (activeFilters.lastUpdated && activeFilters.lastUpdated !== "none") {
+      const compareByDate = (a: ProductTypes, b: ProductTypes) => {
+        const toTime = (value: unknown) => {
+          if (!value) return 0;
+          const date = new Date(value as string | number | Date);
+          return Number.isNaN(date.getTime()) ? 0 : date.getTime();
+        };
 
+        const aTime = toTime(a.fechamodificacion);
+        const bTime = toTime(b.fechamodificacion);
+
+        if (activeFilters.lastUpdated === "mas-antiguos") {
+          return aTime - bTime;
+        }
+        return bTime - aTime;
+      };
+
+      filtered = [...filtered].sort(compareByDate);
+    }
 
     setProductList(filtered);
   }, [activeFilters, productsDataFromStore]);

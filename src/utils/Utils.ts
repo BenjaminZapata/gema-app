@@ -134,6 +134,12 @@ export const filtersSchema = z
       .array(z.string())
       .default([])
       .describe("IDs de los proveederos seleccionados para filtrar"),
+    lastUpdated: z
+      .enum(["none", "mas-antiguos", "mas-recientes"], {
+        errorMap: () => ({ message: "Seleccione un orden de actualización válido" }),
+      })
+      .default("none")
+      .describe("Ordenar por fecha de última actualización"),
   })
   .strict("Se enviaron campos no esperados en los filtros.")
   .describe("Schema para validar los filtros de productos");

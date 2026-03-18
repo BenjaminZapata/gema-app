@@ -65,6 +65,14 @@ export const CustomInput = ({
       }
       return "false";
     }
+
+    if (data.nombre === "lastUpdated") {
+      if (typeof currentFieldValue === "string" && currentFieldValue !== "") {
+        return currentFieldValue;
+      }
+      return "none";
+    }
+
     if (data.type === "date") {
       return null;
     }
@@ -145,6 +153,12 @@ export const CustomInput = ({
         selectOptions = [
           { value: "false", label: "No" },
           { value: "true", label: "Si" },
+        ];
+      } else if (data.nombre === "lastUpdated") {
+        selectOptions = [
+          { value: "none", label: "Sin ordenar" },
+          { value: "mas-antiguos", label: "Más antiguos" },
+          { value: "mas-recientes", label: "Más recientes" },
         ];
       }
 
