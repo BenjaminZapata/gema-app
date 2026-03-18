@@ -136,7 +136,9 @@ export const filtersSchema = z
       .describe("IDs de los proveederos seleccionados para filtrar"),
     lastUpdated: z
       .enum(["none", "mas-antiguos", "mas-recientes"], {
-        errorMap: () => ({ message: "Seleccione un orden de actualización válido" }),
+        errorMap: () => ({
+          message: "Seleccione un orden de actualización válido",
+        }),
       })
       .default("none")
       .describe("Ordenar por fecha de última actualización"),

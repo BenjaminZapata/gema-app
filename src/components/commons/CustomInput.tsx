@@ -18,8 +18,10 @@ import dayjs, { Dayjs } from "dayjs";
 import { useAppSelector } from "@/hooks/reduxHooks"; // Ajusta la ruta
 import { InputProps } from "@/utils/Commons";
 
-interface CustomInputProps
-  extends Omit<BoxProps, "defaultValue" | "onChange" | "value" | "name"> {
+interface CustomInputProps extends Omit<
+  BoxProps,
+  "defaultValue" | "onChange" | "value" | "name"
+> {
   data: InputProps;
   currentFieldValue:
     | string
