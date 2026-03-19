@@ -70,7 +70,7 @@ export default function SalesPage() {
             />
           </Box>
           <Box width={{ sm: "40%", lg: "30%" }} height={"90svh"}>
-            {isClient ? (
+            {isClient && productsChartData.length !== 0 ? (
               <Box
                 display={"flex"}
                 justifyContent={"flex-start"}

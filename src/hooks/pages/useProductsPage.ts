@@ -174,6 +174,7 @@ export const useProductsPage = () => {
       filtered = [...filtered].sort(compareByDate);
     }
 
+    setPage(1);
     setProductList(filtered);
   }, [activeFilters, productsDataFromStore]);
 

@@ -2,12 +2,7 @@
 
 import { PageSpinner } from "@/components/commons/PageSpinner";
 import { PieChartComponent } from "@/components/commons/PieChart";
-import {
-  Box,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { useSalesData } from "./ventas/SalesContext";
 import { useEffect, useState } from "react";
 import { useAppDispatch } from "@/hooks/reduxHooks";
@@ -112,6 +107,7 @@ export default function HomePage() {
                   borderRadius: 2,
                   p: 2,
                   width: "100%",
+                  py: 6
                 })}
               >
                 <Box textAlign="left" width={"30%"}>

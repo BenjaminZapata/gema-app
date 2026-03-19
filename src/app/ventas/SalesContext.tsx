@@ -71,13 +71,14 @@ export const SalesDataProvider = ({
         (acc, sale) => acc + sale.total,
         0
       );
+      if (totalByMethod === 0) return;
       return {
         id: Number(method.id),
         label: method.nombre,
         value: totalByMethod,
       };
     });
-    return data;
+    return data.filter((el) => el !== undefined) as Array<PieChartDataTypes>;
   };
 
   /**
@@ -106,6 +107,7 @@ export const SalesDataProvider = ({
         (acc, sale) => acc + sale.total,
         0
       );
+      if (totalByCategory === 0) return;
       return {
         id: category,
         label:
@@ -114,7 +116,7 @@ export const SalesDataProvider = ({
         value: totalByCategory,
       };
     });
-    return data;
+    return data.filter((el) => el !== undefined) as Array<PieChartDataTypes>;
   };
 
   // Función para procesar los datos de ventas y agruparlos por producto.
@@ -137,6 +139,7 @@ export const SalesDataProvider = ({
         );
         return acc + (productUnits || 0);
       }, 0);
+      if (totalUnitsSold === 0) return;
 
       const totalByProduct = salesWithProduct.reduce((acc, sale) => {
         const productDetails = sale.detalles?.filter(
@@ -165,7 +168,7 @@ export const SalesDataProvider = ({
         value: totalByProduct,
       };
     });
-    return data;
+    return data.filter((el) => el !== undefined) as Array<PieChartDataTypes>;
   };
 
   // Efecto para procesar y actualizar los datos de los gráficos cuando las ventas o los métodos de pago cambian.
