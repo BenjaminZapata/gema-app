@@ -15,7 +15,7 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { SaleDetailRow } from "./SaleDetailRow";
 
 interface SalesDetailsListTypes {
@@ -35,6 +35,22 @@ export const SalesDetailsList = ({
 }: SalesDetailsListTypes) => {
   const [expanded, setExpanded] = React.useState<string | false>(false);
   const [filteredSales, setFilteredSales] = useState<SalesTypes[]>(sales);
+
+  const firstSaleOfMonthIds = useMemo(() => {
+    const seenMonths = new Set<string>();
+    const firstIds = new Set<number>();
+
+    sales.forEach((sale) => {
+      const date = new Date(sale.fecha);
+      const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
+      if (!seenMonths.has(monthKey)) {
+        seenMonths.add(monthKey);
+        firstIds.add(sale.id);
+      }
+    });
+
+    return firstIds;
+  }, [sales]);
 
   useEffect(() => {
     setFilteredSales(sales);
@@ -91,6 +107,7 @@ export const SalesDetailsList = ({
                       handleSaleDelete={handleSaleDelete}
                       sale={s}
                       sales={sales}
+                      isFirstSaleOfMonth={firstSaleOfMonthIds.has(s.id)}
                     />
                   );
                 })

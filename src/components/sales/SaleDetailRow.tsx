@@ -19,6 +19,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
+import { lighten, useTheme } from "@mui/material/styles";
 import React, { SyntheticEvent, useState } from "react";
 import { DeleteSaleDialog } from "./salesDialogs/DeleteSaleDialog";
 import { SaleProductsListDialog } from "./salesDialogs/SaleProductsListDialog";
@@ -45,6 +46,7 @@ interface SaleDetailRowTypes {
   ) => (event: SyntheticEvent<Element, Event>, expanded: boolean) => void;
   handleSaleDelete: (id: number) => void;
   index: number;
+  isFirstSaleOfMonth?: boolean;
   paymentMethods: PaymentMethodsTypes[];
   products: ProductTypes[];
   sale: SalesTypes;
@@ -57,11 +59,13 @@ export const SaleDetailRow = ({
   handleChange,
   handleSaleDelete,
   index,
+  isFirstSaleOfMonth = false,
   paymentMethods,
   products,
   sale,
   sales,
 }: SaleDetailRowTypes) => {
+  const theme = useTheme();
   const [deleteSaleOpen, setDeleteSaleOpen] = useState<boolean>(false);
   const date = new Date(sale.fecha);
   const day = date.getDate();
@@ -70,41 +74,74 @@ export const SaleDetailRow = ({
     2,
     "0"
   )}:${String(date.getSeconds()).padStart(2, "0")}`;
+  const barColor = lighten(
+    theme.palette.primary.main,
+    Math.min(0.9, 0.12 + month * 0.06)
+  );
   const paymentMethod = paymentMethods
     ? paymentMethods?.find((p) => p.id == String(sale.mediosdepago))?.nombre
     : "";
 
   const { id, total } = sale;
+  const isExpanded = expanded === `panel${index}`;
 
   return (
     <>
       <TableRow hover key={id} sx={{ width: "100%" }}>
         <TableCell
+          data-name="SaleDateCell"
           sx={{
-            alignItems: "center",
+            position: "relative",
             borderBottom:
               index == sales.length - 1
                 ? "none"
                 : "1px solid rgba(224, 224, 224, 1)",
-            display: "flex",
-            flexDirection: "column",
             minWidth: "90px",
+            p: 0,
           }}
         >
           <Box
-            display={"flex"}
-            flexDirection={"column"}
-            alignItems={"center"}
-            justifyContent={"center"}
-            height={expanded === `panel${index}` ? "200px" : ""}
+            sx={{
+              display: "flex",
+              width: "100%",
+            }}
           >
-            <Typography variant="h6">
-              {day} de {months[month].slice(0, 3).toUpperCase()}
-            </Typography>
-            <Typography>{time}</Typography>
+            {isFirstSaleOfMonth && (
+              <Box
+                sx={{
+                  position: "absolute",
+                  left: theme.spacing(1),
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  width: theme.spacing(1.25),
+                  height: isExpanded ? theme.spacing(6) : theme.spacing(5),
+                  borderRadius: `${theme.shape.borderRadius}px 2px 2px ${theme.shape.borderRadius}px`,
+                  backgroundColor: barColor,
+                  flexShrink: 0,
+                }}
+              />
+            )}
+            <Box
+              display={"flex"}
+              flexDirection={"column"}
+              alignItems={"center"}
+              justifyContent={"center"}
+              width={"100%"}
+              sx={{
+                pl: isFirstSaleOfMonth
+                  ? `calc(${theme.spacing(1.25)} + ${theme.spacing(2)})`
+                  : 0,
+              }}
+            >
+              <Typography variant="h6">
+                {day} de {months[month].slice(0, 3).toUpperCase()}
+              </Typography>
+              <Typography>{time}</Typography>
+            </Box>
           </Box>
         </TableCell>
         <TableCell
+          data-name="SaleDetailsCell"
           sx={{
             borderBottom:
               index == sales.length - 1
