@@ -96,17 +96,19 @@ export const SalesDataProvider = ({
       const productsInCategory = products.filter(
         (product) => product.categoria === category
       );
-      const salesInCategory = sales.filter((sale) =>
-        sale.detalles?.some((detail) =>
-          productsInCategory.some(
-            (product) => product.id === detail.productocodigo
-          )
-        )
+      const productIdsInCategory = new Set(
+        productsInCategory.map((product) => product.id)
       );
-      const totalByCategory = salesInCategory.reduce(
-        (acc, sale) => acc + sale.total,
-        0
-      );
+
+      const totalByCategory = sales.reduce((acc, sale) => {
+        const saleCategoryTotal = sale.detalles?.reduce((sum, detail) => {
+          if (!productIdsInCategory.has(detail.productocodigo)) return sum;
+          return sum + detail.cantidad * detail.preciounitario;
+        }, 0);
+
+        return acc + (saleCategoryTotal || 0);
+      }, 0);
+
       if (totalByCategory === 0) return;
       return {
         id: category,
