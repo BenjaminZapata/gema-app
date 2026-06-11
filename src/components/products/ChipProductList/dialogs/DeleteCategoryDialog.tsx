@@ -1,5 +1,5 @@
 // Importes de React
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 // Importes de terceros
 import { toast } from 'sonner'
 import {
@@ -32,11 +32,20 @@ export const DeleteCategoryDialog = ({
   const dispatch = useAppDispatch()
   const { categories } = useAppSelector((state) => state.productos)
 
-  const sortedCategories = [...categories].sort(function (a, b) {
-    if (a.nombre < b.nombre) return -1
-    if (b.nombre < a.nombre) return 1
-    return 0
-  })
+  const sortedCategories = useMemo(() => {
+    return categories && Array.isArray(categories) 
+      ? [...categories].sort(function (a, b) {
+          if (a.nombre < b.nombre) return -1
+          if (b.nombre < a.nombre) return 1
+          return 0
+        })
+      : []
+  }, [categories])
+
+  if (open && !categories?.length) {
+    toast.error('No hay categorías cargadas')
+    setOpen(false)
+  }
 
   const handleDialogClose = () => {
     setSelectedCategory('')
@@ -45,11 +54,6 @@ export const DeleteCategoryDialog = ({
 
   const handleChange = (event: SelectChangeEvent) => {
     setSelectedCategory(event.target.value)
-  }
-
-  if (open && !categories?.length) {
-    toast.error('No hay categorías cargadas')
-    setOpen(false)
   }
 
   return (
