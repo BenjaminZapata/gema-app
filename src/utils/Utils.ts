@@ -74,16 +74,23 @@ const baseProductSchemaFields = {
 };
 
 export const createProductSchema = z.object({
-  id: z.coerce
-    .number({ invalid_type_error: "Código es requerido" })
-    .int("El código debe ser un número entero") // o string si tu ID puede ser alfanumérico
-    .positive("El código debe ser positivo"),
+  id: z
+    .string()
+    .min(1, "El código es requerido")
+    .regex(/^[0-9]+$/, {
+      message: "El código debe contener solo dígitos",
+    }),
   ...baseProductSchemaFields,
 });
 export type CreateProductFormData = z.infer<typeof createProductSchema>;
 
 export const updateProductSchema = z.object({
-  id: z.coerce.number().int().positive(),
+  id: z
+    .string()
+    .min(1, "El código es requerido")
+    .regex(/^[0-9]+$/, {
+      message: "El código debe contener solo dígitos",
+    }),
   ...baseProductSchemaFields,
 });
 export type UpdateProductFormData = z.infer<typeof updateProductSchema>;
