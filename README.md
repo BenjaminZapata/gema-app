@@ -80,3 +80,25 @@ Para ejecutar este proyecto en tu entorno local, sigue estos pasos generales:
     yarn dev
     ```
     La aplicación debería estar disponible en `http://localhost:3000` (o el puerto que Next.js indique).
+
+## Despliegue en Producción con Docker
+
+1. Crea el archivo de configuración de producción a partir del ejemplo:
+    ```bash
+    copy .env.production.example .env.production
+    ```
+
+2. Completa `DATABASE_URL` en `.env.production` con la cadena de conexión de tu base de datos MySQL.
+
+   - Si MySQL está instalado en la máquina host (fuera de Docker) en Windows, usa `host.docker.internal` en la URL:
+     ```env
+     DATABASE_URL="mysql://root:root@host.docker.internal:3306/gema"
+     ```
+   - Si usas una base de datos externa fuera del host Docker, reemplaza `host.docker.internal` por la dirección real del servidor MySQL.
+
+3. Arranca el despliegue con Docker Compose:
+    ```bash
+    start.bat
+    ```
+
+> Nota: este repositorio ignora archivos `.env*`, por lo que las credenciales de producción no se deben subir a Git.
