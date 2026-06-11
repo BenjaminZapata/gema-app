@@ -1,6 +1,4 @@
-// Importes de React
 import { useCallback, useEffect, useState } from "react";
-// Importes de terceros
 import {
   Button,
   CircularProgress,
@@ -11,7 +9,6 @@ import {
   Theme,
 } from "@mui/material";
 import { toast } from "sonner";
-// Importes propios
 import {
   addSupplier,
   getSuppliers,
@@ -33,7 +30,7 @@ export const AddSupplierDialog = ({
   const getInitialValues = useCallback((): SupplierFormData => {
     try {
       return supplierSchema.parse({});
-    } catch (e) {
+    } catch {
       const initialData: Record<string, string> = {};
       addSupplierInputs.forEach((input) => {
         initialData[input.nombre] = "";
@@ -51,16 +48,6 @@ export const AddSupplierDialog = ({
   const [isFormInvalid, setIsFormInvalid] = useState<boolean>(true);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    if (open) {
-      const initialValues = getInitialValues();
-      setFormData(initialValues);
-      setFieldErrors({});
-      setIsFormInvalid(true);
-      validateForm(initialValues);
-    }
-  }, [open, getInitialValues]);
 
   const handleClose = () => {
     setOpen(false);
@@ -96,6 +83,16 @@ export const AddSupplierDialog = ({
       return false;
     }
   }, []);
+
+  useEffect(() => {
+    if (open) {
+      const initialValues = getInitialValues();
+      setFormData(initialValues);
+      setFieldErrors({});
+      setIsFormInvalid(true);
+      validateForm(initialValues);
+    }
+  }, [open, getInitialValues, validateForm]);
 
   useEffect(() => {
     if (!open) return;

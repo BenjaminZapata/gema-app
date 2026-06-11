@@ -1,3 +1,17 @@
 {
-  "editor.fontFamily": "Google Sans Code"
+  "editor.fontFamily": "Google Sans Code",
+  // Habilita que ESLint revise los archivos en tiempo real
+  "eslint.enable": true,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  // Sugerencia pro: Corrige errores simples (como variables no usadas) automáticamente al guardar
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  // Resalta los errores de TypeScript directamente en la barra de pestañas
+  "js/ts.validate.enabled": true
 }
