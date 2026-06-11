@@ -128,9 +128,7 @@ export const SaleDetailRow = ({
               justifyContent={"center"}
               width={"100%"}
               sx={{
-                pl: isFirstSaleOfMonth
-                  ? `calc(${theme.spacing(1.25)} + ${theme.spacing(2)})`
-                  : 0,
+                pl: `calc(${theme.spacing(1.25)} + ${theme.spacing(2)})`
               }}
             >
               <Typography variant="h6">

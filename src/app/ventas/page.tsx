@@ -4,6 +4,11 @@ import React from "react";
 import {
   Box,
   Divider,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
   Typography,
   useMediaQuery,
   useTheme,
@@ -11,11 +16,19 @@ import {
 import { ChipSalesList } from "@/components/sales/ChipSalesList";
 import { PageSpinner } from "@/components/commons/PageSpinner";
 import { PieChartComponent } from "@/components/commons/PieChart";
+import { BarChartComponent } from "@/components/commons/BarChartComponent";
 import { SalesDetailsList } from "@/components/sales/SalesDetailsList";
 import { useSalesPage } from "@/hooks/pages/useSalesPage";
 
 export default function SalesPage() {
   const {
+    getDayTotal,
+    getDayTotalByPaymentMethod,
+    barChartData,
+    barChartSeries,
+    barChartMonthTotals,
+    monthsToShow,
+    setMonthsToShow,
     handleAddProduct,
     handlePaymentChange,
     handleProductQuantityChange,
@@ -79,39 +92,84 @@ export default function SalesPage() {
               >
                 <Typography variant="h4">Resumen</Typography>
                 <Divider sx={{ width: "90%" }} />
-                <Typography variant="h6" fontWeight={300}>
-                  Ventas por metodo de pago
+                <Typography
+                  variant="h6"
+                  sx={(theme) => ({ marginLeft: theme.spacing(2) })}
+                >
+                  Total del dia: ${getDayTotal().toFixed(2)}
                 </Typography>
-                <PieChartComponent
-                  data={
-                    paymentMethodChartData.length > 8
-                      ? paymentMethodChartData.slice(0, 8)
-                      : paymentMethodChartData
-                  }
-                  width={upLg ? 225 : 100}
-                />
-                <Typography variant="h6" fontWeight={300}>
-                  Ventas por categoria de producto
-                </Typography>
-                <PieChartComponent
-                  data={
-                    productCategoryChartData.length > 8
-                      ? productCategoryChartData.slice(0, 8)
-                      : productCategoryChartData
-                  }
-                  width={upLg ? 225 : 100}
-                />
-                <Typography variant="h6" fontWeight={300}>
-                  Ventas por producto (más vendidos)
-                </Typography>
-                <PieChartComponent
-                  data={
-                    productsChartData.length > 8
-                      ? productsChartData.slice(0, 8)
-                      : productsChartData
-                  }
-                  width={upLg ? 225 : 100}
-                />
+                <Box sx={{ marginLeft: 2 }}>
+                  {getDayTotalByPaymentMethod().map((payment) => (
+                    <Typography
+                      key={payment.id}
+                      variant="body1"
+                      sx={{
+                        color: "gray",
+                        cursor: "pointer",
+                        fontWeight: "500",
+                        width: "fit-content",
+                        "&:hover": { color: "primary.main" },
+                      }}
+                    >
+                      {payment.nombre}: ${payment.total.toFixed(2)}
+                    </Typography>
+                  ))}
+                </Box>
+                {barChartData.length > 0 && barChartSeries.length > 0 ? (
+                  <Box sx={{ width: "100%" }}>
+                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 2, marginLeft: 2, flexWrap: "wrap", mb: 2 }}>
+                    <Typography variant="h6">
+                      Ingresos por método de pago (últimos {monthsToShow} meses)
+                    </Typography>
+                    <FormControl size="small" sx={{ minWidth: 160 }}>
+                      <InputLabel id="sales-months-select-label">Meses</InputLabel>
+                      <Select
+                        labelId="sales-months-select-label"
+                        id="sales-months-select"
+                        value={String(monthsToShow)}
+                        label="Meses"
+                        onChange={(event: SelectChangeEvent) =>
+                          setMonthsToShow(Number(event.target.value))
+                        }
+                      >
+                        {[1, 3, 6, 9, 12].map((months) => (
+                          <MenuItem key={months} value={months}>
+                            {months === 1
+                              ? "Último mes"
+                              : `Últimos ${months} meses`}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Box>
+                    <BarChartComponent
+                      width={upLg ? 520 : 360}
+                      height={340}
+                      data={barChartData}
+                      xAxis={[
+                        {
+                          dataKey: "month",
+                          valueFormatter: (value: string, context: any) => {
+                            if (context.location === "tooltip") {
+                              const total = barChartMonthTotals[String(value)] ?? 0;
+                              const monthLabel = String(value).split(" ")[0];
+                              return `Total ${monthLabel}: $${total.toFixed(2)}`;
+                            }
+                            return String(value);
+                          },
+                        },
+                      ]}
+                      yAxis={[{ min: 0, width: 40 }]}
+                      series={barChartSeries}
+                      slotProps={{
+                        tooltip: {
+                          trigger: "axis",
+                          sort: "desc",
+                        },
+                      }}
+                    />
+                  </Box>
+                ) : null}
               </Box>
             ) : null}
           </Box>

@@ -9,11 +9,12 @@ import {
   PieChartDataTypes,
   ProductSaleDetailsTypes,
   ProductTypes,
+  SalesTypes,
 } from "@/types/CommonTypes";
 import { status } from "@/utils/Utils";
 import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "../reduxHooks";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSalesData } from "@/app/ventas/SalesContext";
 
 /**
@@ -47,6 +48,8 @@ export const useSalesPage = () => {
   );
   // Estado para el total monetario de la venta actual.
   const [total, setTotal] = useState(0);
+  // Estado para la cantidad de meses que se deben mostrar en el gráfico de barras.
+  const [monthsToShow, setMonthsToShow] = useState(3);
   // Estado para almacenar los datos procesados para el gráfico de torta de métodos de pago.
   const [paymentMethodChartData, setPaymentMethodChartData] =
     useState<Array<PieChartDataTypes>>(paymentMethodData);
@@ -96,6 +99,33 @@ export const useSalesPage = () => {
     statusSales,
     statusSuppliers,
   ]);
+
+  const normalizeDate = (value: string | Date) => {
+    const date = new Date(value);
+    date.setHours(0, 0, 0, 0);
+    return date;
+  };
+
+  const getSalesForToday = () => {
+    const today = normalizeDate(new Date());
+    return sales.filter(
+      (sale) => normalizeDate(sale.fecha).getTime() === today.getTime()
+    );
+  };
+
+  const sumSalesTotal = (salesToSum: SalesTypes[]) =>
+    salesToSum.reduce((sum, sale) => sum + sale.total, 0);
+
+  const buildPaymentMethodTotals = (salesToGroup: SalesTypes[]) => {
+    const totals = new Map<number, number>();
+    salesToGroup.forEach((sale) => {
+      totals.set(
+        sale.mediosdepago,
+        (totals.get(sale.mediosdepago) ?? 0) + sale.total
+      );
+    });
+    return totals;
+  };
 
   // Efecto para recalcular el total de la venta cada vez que la lista de productos cambia.
   useEffect(() => {
@@ -231,7 +261,106 @@ export const useSalesPage = () => {
     setPaymentMethodSelected(undefined);
   };
 
+  /**
+   * Calcula el total de ventas del día actual.
+   * @returns {number} El total de ventas del día actual.
+   */
+  const getDayTotal = (): number => sumSalesTotal(getSalesForToday());
+
+  /**
+   * Calcula el total de ventas del día actual discriminado por método de pago.
+   * @returns {Array} Array de objetos con id, nombre y total de cada método de pago usado hoy.
+   */
+  const getDayTotalByPaymentMethod = (): Array<{ id: number | string; nombre: string; total: number }> => {
+    const totals = buildPaymentMethodTotals(getSalesForToday());
+    return paymentMethods
+      .filter((method) => totals.has(Number(method.id)))
+      .map((method) => ({
+        id: method.id,
+        nombre: method.nombre,
+        total: totals.get(Number(method.id)) ?? 0,
+      }));
+  };
+
+  const getMonthKey = (date: Date) => `${date.getFullYear()}-${date.getMonth()}`;
+
+  const getMonthLabels = (count: number) => {
+    const today = new Date();
+    return Array.from({ length: count }, (_, index) => {
+      const offset = count - 1 - index;
+      const monthDate = new Date(today.getFullYear(), today.getMonth() - offset, 1);
+      return {
+        key: getMonthKey(monthDate),
+        label: monthDate.toLocaleString("es-ES", {
+          month: "long",
+          year: "numeric",
+        }),
+      };
+    });
+  };
+
+  const {
+    barChartData,
+    barChartSeries,
+    barChartMonthTotals,
+  } = useMemo(() => {
+    const months = getMonthLabels(monthsToShow);
+    const validKeys = new Set(months.map((month) => month.key));
+    const monthTotals: Record<string, number> = {};
+    const monthPaymentMethodTotals: Record<string, Record<string, number>> = {};
+
+    sales.forEach((sale) => {
+      const saleKey = getMonthKey(new Date(sale.fecha));
+      if (!validKeys.has(saleKey)) return;
+
+      monthTotals[saleKey] = (monthTotals[saleKey] ?? 0) + sale.total;
+      const paymentId = String(sale.mediosdepago);
+      monthPaymentMethodTotals[saleKey] =
+        monthPaymentMethodTotals[saleKey] ?? {};
+      monthPaymentMethodTotals[saleKey][paymentId] =
+        (monthPaymentMethodTotals[saleKey][paymentId] ?? 0) + sale.total;
+    });
+
+    const data = months.map(({ key, label }) => ({
+      month: label,
+      ...paymentMethods.reduce<Record<string, unknown>>((row, method) => {
+        row[`pm_${method.id}`] =
+          monthPaymentMethodTotals[key]?.[String(method.id)] ?? 0;
+        return row;
+      }, {}),
+    }));
+
+    const series = paymentMethods.map((method) => ({
+      dataKey: `pm_${method.id}`,
+      label: method.nombre,
+      stack: "payments",
+      valueFormatter: (value: number | string | null) =>
+        typeof value === "number" ? `$${value.toFixed(2)}` : "",
+    }));
+
+    const totalsByLabel = months.reduce<Record<string, number>>(
+      (acc, { key, label }) => {
+        acc[label] = monthTotals[key] ?? 0;
+        return acc;
+      },
+      {}
+    );
+
+    return {
+      barChartData: data,
+      barChartSeries: series,
+      barChartMonthTotals: totalsByLabel,
+    };
+  }, [sales, paymentMethods, monthsToShow]);
+
   return {
+    getDayTotal,
+    getDayTotalByPaymentMethod,
+    barChartData,
+    barChartSeries,
+    barChartMonthTotals,
+    monthsToShow,
+    setMonthsToShow,
     handleAddProduct,
     handlePaymentChange,
     handleProductQuantityChange,
