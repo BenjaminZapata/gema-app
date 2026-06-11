@@ -121,10 +121,10 @@ export const ProductsList = ({
               productsList.map((p) => {
                 const selectedProduct = products.find(
                   (prod) => prod.id == p.productocodigo
-                );
+                ) as ProductTypes;
                 return (
                   <AddedProductRow
-                    key={`${p.nombre}-ProductsList`}
+                    key={`${selectedProduct.nombre}-ProductsList`}
                     addedProduct={p}
                     handleProductQuantityChange={handleProductQuantityChange}
                     productData={selectedProduct}
