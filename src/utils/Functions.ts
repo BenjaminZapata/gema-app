@@ -91,6 +91,8 @@ export const cleanObjectNullValues = (
   object: object | Record<string | number, unknown>
 ) => {
   return Object.fromEntries(
-    Object.entries(object).filter(([, value]) => value)
+    Object.entries(object).filter(([, value]) =>
+      value !== null && value !== undefined && value !== ""
+    )
   );
 };
