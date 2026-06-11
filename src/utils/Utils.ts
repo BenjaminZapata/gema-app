@@ -106,6 +106,14 @@ export const filtersSchema = z
         return false;
       }, z.boolean().optional().default(false))
       .describe("Filtrar por productos con stock bajo"),
+    withExpiration: z
+      .preprocess((val) => {
+        if (typeof val === "boolean") return val;
+        if (val === "true") return true;
+        if (val === "false") return false;
+        return false;
+      }, z.boolean().optional().default(false))
+      .describe("Filtrar por productos que tienen fecha de vencimiento"),
     price: z
       .object({
         min: z.coerce.number().min(0).optional(),
@@ -277,6 +285,12 @@ export const filterDialogInputs: Array<InputTypes> = [
   {
     label: "Con poco stock",
     nombre: "lowStock",
+    required: false,
+    type: "checkbox",
+  },
+  {
+    label: "Con fecha de vencimiento",
+    nombre: "withExpiration",
     required: false,
     type: "checkbox",
   },

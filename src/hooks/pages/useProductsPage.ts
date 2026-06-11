@@ -19,6 +19,7 @@ const initialFiltersState: ProductFiltersStateTypes = {
   selectedCategoryIds: [],
   selectedSupplierIds: [],
   lastUpdated: "none",
+  withExpiration: false,
 };
 
 export const useProductsPage = () => {
@@ -153,8 +154,21 @@ export const useProductsPage = () => {
     //   }
     // }
 
+    //* Por fecha de vencimiento
+    if (activeFilters.withExpiration) {
+      filtered = filtered.filter((p) => p.fechavencimiento != null);
+      filtered = [...filtered].sort((a: ProductTypes, b: ProductTypes) => {
+        const toTime = (value: unknown) => {
+          if (!value) return Number.POSITIVE_INFINITY;
+          const date = new Date(value as string | number | Date);
+          return Number.isNaN(date.getTime()) ? Number.POSITIVE_INFINITY : date.getTime();
+        };
+        return toTime(a.fechavencimiento) - toTime(b.fechavencimiento);
+      });
+    } 
+
     //* Por ultima actualización
-    if (activeFilters.lastUpdated && activeFilters.lastUpdated !== "none") {
+    if (!activeFilters.withExpiration && activeFilters.lastUpdated && activeFilters.lastUpdated !== "none") {
       const compareByDate = (a: ProductTypes, b: ProductTypes) => {
         const toTime = (value: unknown) => {
           if (!value) return 0;

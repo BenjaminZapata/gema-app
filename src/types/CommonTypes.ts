@@ -78,6 +78,7 @@ export interface ProductFiltersStateTypes {
   selectedCategoryIds: string[];
   selectedSupplierIds: string[];
   lastUpdated: "none" | "mas-antiguos" | "mas-recientes";
+  withExpiration: boolean;
 }
 
 export interface PieChartDataTypes {
