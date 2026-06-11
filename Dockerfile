@@ -15,6 +15,8 @@ COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
+RUN npx prisma generate
+
 # Forzamos a Next.js a usar una carpeta de caché persistente dentro de Docker
 RUN --mount=type=cache,target=/app/.next/cache npm run build
 
