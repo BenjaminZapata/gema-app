@@ -1,39 +1,44 @@
-# --- Etapa 1: Instalar dependencias ---
-FROM node:18-alpine AS deps
+# --- Etapa 1: Dependencias en caché ---
+FROM node:22.16-alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
+
+# Copiamos SOLO los archivos de paquetes primero para congelar la capa de npm install
 COPY package*.json ./
 RUN npm ci
 
-# --- Etapa 2: Construir la aplicación ---
-FROM node:18-alpine AS builder
+# --- Etapa 2: Compilación optimizada con caché ---
+FROM node:22.16-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-# Next.js recopila telemetría anónima, la desactivamos para el build de producción
-ENV NEXT_TELEMETRY_DISABLED=1
-RUN npm run build
 
-# --- Etapa 3: Entorno de ejecución en Producción ---
-FROM node:18-alpine AS runner
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Forzamos a Next.js a usar una carpeta de caché persistente dentro de Docker
+RUN --mount=type=cache,target=/app/.next/cache npm run build
+
+# --- Etapa 3: El entorno de ejecución más ligero posible (Standalone) ---
+FROM node:22.16-alpine AS runner
 WORKDIR /app
+
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Creamos un usuario del sistema para no correr Docker como root (Buenas prácticas de seguridad)
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Copiamos los archivos necesarios desde la etapa de compilación
 COPY --from=builder /app/public ./public
-COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
+
+# El modo standalone de Next extrae solo los archivos necesarios para correr, reduciendo el peso un 80%
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 USER nextjs
 
-# Next.js por defecto corre en el puerto 3000
 EXPOSE 3000
 ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
 
-CMD ["npm", "start"]
+# En modo standalone, Next arranca directamente desde su servidor optimizado, no con npm start
+CMD ["node", "server.js"]
