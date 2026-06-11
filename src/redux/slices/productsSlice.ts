@@ -85,7 +85,8 @@ export const addProduct = createAsyncThunk(
       );
       toast.success("Se ha agregado el producto");
       return res;
-    } catch {
+    } catch (err) {
+      console.error(err);
       toast.error("ERROR: No se pudo añadir el producto");
     }
   }
