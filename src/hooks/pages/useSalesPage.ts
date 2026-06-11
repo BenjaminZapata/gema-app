@@ -32,11 +32,7 @@ export const useSalesPage = () => {
     setIsClient(true);
   }, []);
 
-  const {
-    paymentMethodChartData: paymentMethodData,
-    productCategoryChartData: productCategoryData,
-    productsChartData: productsData,
-  } = useSalesData();
+  const { productsChartData: productsData } = useSalesData();
 
   // Estado para controlar la visibilidad del indicador de carga.
   const [loading, setLoading] = useState<boolean>(false);
@@ -50,12 +46,6 @@ export const useSalesPage = () => {
   const [total, setTotal] = useState(0);
   // Estado para la cantidad de meses que se deben mostrar en el gráfico de barras.
   const [monthsToShow, setMonthsToShow] = useState(3);
-  // Estado para almacenar los datos procesados para el gráfico de torta de métodos de pago.
-  const [paymentMethodChartData, setPaymentMethodChartData] =
-    useState<Array<PieChartDataTypes>>(paymentMethodData);
-  // Estado para almacenar los datos procesados para el gráfico de torta de ventas por categoría de producto.
-  const [productCategoryChartData, setProductCategoryChartData] =
-    useState<Array<PieChartDataTypes>>(productCategoryData);
   // Estado para almacenar los datos procesados para el gráfico de torta de ventas por producto (más vendidos).
   const [productsChartData, setProductsChartData] =
     useState<Array<PieChartDataTypes>>(productsData);
@@ -145,14 +135,10 @@ export const useSalesPage = () => {
     }
   }, [open]);
 
-  // Efecto para actualizar los datos de los gráficos cuando los datos del contexto cambian.
+  // Efecto para actualizar los datos de ventas por producto cuando cambian los datos del contexto.
   useEffect(() => {
-    if (paymentMethodData.length > 0)
-      setPaymentMethodChartData(paymentMethodData);
-    if (productCategoryData.length > 0)
-      setProductCategoryChartData(productCategoryData);
     if (productsData.length > 0) setProductsChartData(productsData);
-  }, [paymentMethodData, productCategoryData, productsData]);
+  }, [productsData]);
 
   /**
    * Añade un producto a la lista de la venta actual.
@@ -369,17 +355,14 @@ export const useSalesPage = () => {
     isClient,
     loading,
     open,
-    paymentMethodChartData,
     paymentMethods,
     paymentMethodSelected,
-    productCategoryChartData,
     products,
     productsChartData,
     productsList,
     resetSale,
     sales,
     setOpen,
-    statusPaymentMethods,
     statusSales,
     total,
   };

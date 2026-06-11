@@ -15,7 +15,6 @@ import {
 } from "@mui/material";
 import { ChipSalesList } from "@/components/sales/ChipSalesList";
 import { PageSpinner } from "@/components/commons/PageSpinner";
-import { PieChartComponent } from "@/components/commons/PieChart";
 import { BarChartComponent } from "@/components/commons/BarChartComponent";
 import { SalesDetailsList } from "@/components/sales/SalesDetailsList";
 import { useSalesPage } from "@/hooks/pages/useSalesPage";
@@ -37,10 +36,8 @@ export default function SalesPage() {
     isClient,
     loading,
     open,
-    paymentMethodChartData,
     paymentMethods,
     paymentMethodSelected,
-    productCategoryChartData,
     products,
     productsChartData,
     productsList,
@@ -60,7 +57,7 @@ export default function SalesPage() {
         <PageSpinner />
       ) : (
         <Box display={"flex"} justifyContent={"space-between"} mt={2}>
-          <Box width={{ sm: "55%", lg: "65%" }} height={"90svh"}>
+          <Box width={{ sm: "55%", lg: "60%" }}>
             <ChipSalesList
               handleAddProduct={handleAddProduct}
               handleProductQuantityChange={handleProductQuantityChange}
@@ -82,7 +79,7 @@ export default function SalesPage() {
               handleSaleDelete={handleSaleDelete}
             />
           </Box>
-          <Box width={{ sm: "40%", lg: "30%" }} height={"90svh"}>
+          <Box width={{ sm: "40%", lg: "37.5%" }}>
             {isClient && productsChartData.length !== 0 ? (
               <Box
                 display={"flex"}
@@ -143,7 +140,7 @@ export default function SalesPage() {
                     </FormControl>
                   </Box>
                     <BarChartComponent
-                      width={upLg ? 520 : 360}
+                      width={upLg ? 500 : 360}
                       height={340}
                       data={barChartData}
                       xAxis={[

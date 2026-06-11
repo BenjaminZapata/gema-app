@@ -96,7 +96,7 @@ export const SaleDetailRow = ({
               index == sales.length - 1
                 ? "none"
                 : "1px solid rgba(224, 224, 224, 1)",
-            minWidth: "90px",
+            minWidth: "140px",
             p: 0,
           }}
         >

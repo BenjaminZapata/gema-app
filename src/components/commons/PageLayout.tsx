@@ -9,7 +9,7 @@ export const PageLayout = ({ children }: { children: React.ReactNode }) => {
       <Box
         ml={9}
         padding={2}
-        height={"100vh"}
+        minHeight={"100vh"}
         width={"calc(100vw - 72px)"}
         sx={{ background: "whitesmoke" }}
       >

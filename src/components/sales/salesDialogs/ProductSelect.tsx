@@ -10,6 +10,8 @@ import {
   TableRow,
   TextField,
   Typography,
+  InputAdornment,
+  IconButton,
 } from "@mui/material";
 import React, { ChangeEvent } from "react";
 
@@ -40,21 +42,21 @@ export const ProductSelect = ({
         value={inputValue}
         sx={{ fontSize: "14px", width: "100%" }}
         onChange={handleInputChange}
-        slotProps={{
-          input: {
-            endAdornment: (
-              <Box
-                sx={{ cursor: inputValue.length ? "pointer" : "default" }}
-                mt={1}
+        InputProps={{
+          endAdornment: inputValue.length ? (
+            <InputAdornment position="end">
+              <IconButton
+                size="small"
                 onClick={() => inputValue.length && clearInput()}
+                aria-label="clear"
               >
                 <Cancel
                   fontSize={"small"}
                   sx={{ color: inputValue.length ? "black" : "gray" }}
                 />
-              </Box>
-            ),
-          },
+              </IconButton>
+            </InputAdornment>
+          ) : undefined,
         }}
       />
       <TableContainer>
