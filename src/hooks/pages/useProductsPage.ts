@@ -139,6 +139,11 @@ export const useProductsPage = () => {
     //* Por stock
     if (activeFilters.lowStock == true) {
       filtered = filtered.filter((p) => p.stock <= p.stockminimo);
+      filtered = [...filtered].sort((a: ProductTypes, b: ProductTypes) => {
+        if (a.stock === 0 && b.stock !== 0) return -1;
+        if (a.stock !== 0 && b.stock === 0) return 1;
+        return a.stock - b.stock;
+      });
     }
 
     // //* Por precio

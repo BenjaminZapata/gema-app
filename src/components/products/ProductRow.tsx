@@ -1,13 +1,10 @@
-// Importes de React
 import { useState } from "react";
-// Importes de teceros
 import { Box, TableCell, TableRow, Tooltip, Typography } from "@mui/material";
 import {
   AutoDelete,
   Storefront,
   ProductionQuantityLimits,
 } from "@mui/icons-material";
-// Importes propios
 import { DeleteSupplierDialog } from "./dialogs/DeleteProductDialog";
 import { ExpirationFunctionTypes, ProductTypes } from "@/types/CommonTypes";
 import { useAppSelector } from "@/hooks/reduxHooks";
@@ -50,6 +47,7 @@ export const ProductRow = ({ product }: ProductRowProps) => {
         hover
         data-name="ProductRow"
         sx={(theme) => ({
+          height: theme.spacing(7),
           "& .MuiTableCell-root": {
             borderBottom: "none",
             color:
@@ -65,7 +63,7 @@ export const ProductRow = ({ product }: ProductRowProps) => {
             {" "}
             <Box
               width={"max-content"}
-              sx={{ textWrap: "wrap", maxWidth: "320px" }}
+              sx={{ textWrap: "wrap" }}
             >
               {nombre}
             </Box>

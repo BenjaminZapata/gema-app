@@ -36,7 +36,7 @@ export const ProductList = ({
 
   return (
     <Box data-name="ProductsList" mt={3}>
-      <Box minHeight={487}>
+      <Box minHeight={630}>
         <TableContainer
           sx={(theme) => ({
             background: theme.palette.common.white,
