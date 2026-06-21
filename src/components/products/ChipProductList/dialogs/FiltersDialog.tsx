@@ -11,7 +11,8 @@ import {
 } from "@mui/material";
 import { ChipProductListButton } from "../ChipProductListButton";
 import { FilterList } from "@mui/icons-material";
-import { filterDialogInputs, filtersSchema } from "@/utils/Utils";
+import { filterDialogInputs } from "@/utils/Utils";
+import { filtersSchema } from "@/types/validationSchemas";
 import { ProductFiltersStateTypes } from "@/types/CommonTypes";
 import { z, ZodError } from "zod";
 import { CustomInput } from "@/components/commons/CustomInput";

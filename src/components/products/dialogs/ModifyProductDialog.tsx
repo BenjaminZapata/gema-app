@@ -14,9 +14,8 @@ import {
 import { ProductTypes } from "@/types/CommonTypes";
 import {
   addProductsInputs,
-  UpdateProductFormData,
-  updateProductSchema,
 } from "@/utils/Utils";
+import { UpdateProductFormData, updateProductSchema } from "@/types/validationSchemas";
 import { useAppDispatch } from "@/hooks/reduxHooks";
 import { getProducts, modifyProduct } from "@/redux/slices/productsSlice";
 import { ProductRowButton } from "../ProductRowButton";

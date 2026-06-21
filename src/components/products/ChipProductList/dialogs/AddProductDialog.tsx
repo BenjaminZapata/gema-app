@@ -15,11 +15,8 @@ import { Add } from "@mui/icons-material";
 import { toast } from "sonner";
 import { ZodError } from "zod";
 import { ChipProductListButton } from "../ChipProductListButton";
-import {
-  addProductsInputs,
-  CreateProductFormData,
-  createProductSchema,
-} from "@/utils/Utils";
+import { addProductsInputs } from "@/utils/Utils";
+import { CreateProductFormData, createProductSchema } from "@/types/validationSchemas";
 import { addProduct, getProducts } from "@/redux/slices/productsSlice";
 import { CustomInput } from "@/components/commons/CustomInput";
 import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";

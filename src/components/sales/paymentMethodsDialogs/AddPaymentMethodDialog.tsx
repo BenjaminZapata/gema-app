@@ -1,6 +1,6 @@
 import { useAppDispatch } from "@/hooks/reduxHooks";
 import { addPaymentMethod, getPaymentMethods } from "@/redux/slices/salesSlice";
-import { paymentMethodSchema } from "@/utils/Utils";
+import { paymentMethodSchema } from "@/types/validationSchemas";
 import {
   Button,
   Dialog,

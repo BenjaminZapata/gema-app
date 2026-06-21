@@ -14,7 +14,8 @@ import {
   getSuppliers,
 } from "../../../../redux/slices/productsSlice";
 import { useAppDispatch } from "@/hooks/reduxHooks";
-import { addSupplierInputs, supplierSchema } from "@/utils/Utils";
+import { addSupplierInputs } from "@/utils/Utils";
+import { supplierSchema } from "@/types/validationSchemas";
 import { CustomInput } from "@/components/commons/CustomInput";
 import { z, ZodError } from "zod";
 

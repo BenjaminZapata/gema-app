@@ -1,19 +1,8 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import {
-  Box,
-  Button,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Pagination,
-  Select,
-  SelectChangeEvent,
-  Typography,
-} from "@mui/material";
+import { Box, Button, FormControl, InputLabel, MenuItem, Pagination, Select, SelectChangeEvent, Typography } from "@mui/material";
 import { AddGastoDialog, type Gasto } from "@/components/gastos/AddGastoDialog";
-import { FiltersDialog } from "@/components/gastos/FiltersDialog";
 
 export default function GastosPage() {
   const [gastos, setGastos] = useState<Array<Gasto & { metodoPago?: string }>>([]);
@@ -22,7 +11,6 @@ export default function GastosPage() {
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
   const [page, setPage] = useState<number>(1);
   const [filterMetodoPago, setFilterMetodoPago] = useState<string>("");
-  const [filterMonths, setFilterMonths] = useState<number>(0);
 
   useEffect(() => {
     const loadGastos = async () => {
@@ -31,9 +19,8 @@ export default function GastosPage() {
         const response = await fetch("/api/gastos");
         if (!response.ok) throw new Error("No se pudo cargar la lista de gastos");
         const data = await response.json();
-        const raw = Array.isArray(data) ? (data as Gasto[]) : [];
-        const enriched = raw.map((g: Gasto) => {
-          const observ = (g.observaciones ?? "") as string;
+        const enriched = (Array.isArray(data) ? data : []).map((g: any) => {
+          const observ = g.observaciones ?? "";
           const parts = observ.split(" - ");
           const metodoPago = parts[0] ? parts[0].trim() : undefined;
           return { ...g, metodoPago };
@@ -67,21 +54,9 @@ export default function GastosPage() {
   }, [gastos]);
 
   const filteredGastos = useMemo(() => {
-    let list = gastos;
-    if (filterMetodoPago) list = list.filter((g) => g.metodoPago === filterMetodoPago);
-    if (filterMonths && filterMonths > 0) {
-      const now = new Date();
-      const cutoff = new Date(now.getFullYear(), now.getMonth() - filterMonths + 1, 1);
-      list = list.filter((g) => {
-        try {
-          return new Date(g.fecha) >= cutoff;
-        } catch {
-          return false;
-        }
-      });
-    }
-    return list;
-  }, [gastos, filterMetodoPago, filterMonths]);
+    if (!filterMetodoPago) return gastos;
+    return gastos.filter((g) => g.metodoPago === filterMetodoPago);
+  }, [gastos, filterMetodoPago]);
 
   const totalPages = useMemo(() => Math.max(1, Math.ceil(filteredGastos.length / rowsPerPage)), [filteredGastos.length, rowsPerPage]);
 
@@ -109,22 +84,10 @@ export default function GastosPage() {
           Gastos
         </Typography>
 
-        <Box display="flex" gap={2} alignItems="center">
-          <Button
-            variant="contained"
-            color="success"
-            onClick={handleAddGasto}
-            sx={(theme) => ({ border: `1px solid ${theme.palette.common.black}` })}
-          >
+        <Box>
+          <Button variant="contained" color="success" onClick={handleAddGasto}>
             Agregar Gasto
           </Button>
-          <FiltersDialog
-            applyFilters={(f) => {
-              setFilterMetodoPago(f.metodoPago ?? "");
-              setFilterMonths(f.months ?? 0);
-              setPage(1);
-            }}
-          />
         </Box>
 
         <Box mt={2}>

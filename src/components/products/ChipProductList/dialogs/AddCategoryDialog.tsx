@@ -13,7 +13,7 @@ import {
   getCategories,
 } from '../../../../redux/slices/productsSlice'
 import { useState } from 'react'
-import { categorySchema } from '../../../../utils/Utils'
+import { categorySchema } from '@/types/validationSchemas'
 import { ZodError } from 'zod'
 
 export const AddCategoryDialog = ({
