@@ -101,7 +101,7 @@ export const FiltersDialog = ({ applyFilters }: { applyFilters: (f: Filters) => 
               Limpiar
             </Button>
             <Box display="flex" gap={1}>
-              <Button variant="contained" color="inherit" onClick={() => setOpen(false)}>
+              <Button color="inherit" onClick={() => setOpen(false)}>
                 Cancelar
               </Button>
               <Button variant="contained" color="success" onClick={handleApply}>
